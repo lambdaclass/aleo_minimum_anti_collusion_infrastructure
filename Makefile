@@ -1,11 +1,15 @@
 build:
-    cargo build
+	cargo build
 
 run:
 	cargo run
 
 test:
-    cargo test
+	cargo test
 
 run_docker:
 	docker compose up
+
+format:
+	cargo fmt --all
+
