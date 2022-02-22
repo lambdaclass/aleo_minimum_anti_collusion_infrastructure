@@ -1,0 +1,3 @@
+services:
+  aleo_voting_system:
+    build: .
