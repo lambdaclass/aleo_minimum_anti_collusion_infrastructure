@@ -26,4 +26,6 @@ FROM debian:buster-slim
 COPY --from=build /aleo_voting_system/target/release/aleo_voting_system .
 
 # set the startup command to run your binary
+EXPOSE 3000
+
 CMD ["./aleo_voting_system"]

@@ -1,3 +1,5 @@
 services:
-  aleo_voting_system:
-    build: .
+  server:
+    build: ./server
+    ports:
+      - 3000:3000
