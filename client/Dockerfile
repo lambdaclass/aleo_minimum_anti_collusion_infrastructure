@@ -21,7 +21,7 @@ RUN rm src/*.rs
 COPY ./src ./src
 
 # build for release
-RUN rm ./target/release/deps/aleo-maci-cli*
+RUN rm ./target/release/deps/aleo_maci_cli*
 RUN cargo build --release
 
 # our final base
