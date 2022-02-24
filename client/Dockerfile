@@ -21,15 +21,15 @@ RUN rm src/*.rs
 COPY ./src ./src
 
 # build for release
-RUN rm ./target/release/deps/client*
+RUN rm ./target/release/deps/aleo-maci-cli*
 RUN cargo build --release
 
 # our final base
 FROM debian:buster-slim
 
 # copy the build artifact from the build stage
-COPY --from=build /aleo_voting_system/target/release/client .
+COPY --from=build /aleo_voting_system/target/release/aleo-maci-cli .
 
 # set the startup command to run your binary
 
-CMD ["./client"]
+CMD ["./aleo-maci-cli"]
