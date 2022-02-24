@@ -1,3 +1,15 @@
 services:
-  aleo_voting_system:
-    build: .
+  server:
+    build:
+      context: ./server
+    ports:
+      - 3000:3000
+  
+  client:
+    build:
+      context: ./client
+      args:
+        SERVER_HOST: server
+        SERVER_PORT: 3000
+    depends_on:
+      - server
