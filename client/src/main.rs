@@ -1,11 +1,11 @@
 // Note: this requires the `derive` feature
 
 use clap::{Parser, Subcommand};
+
 use ring::{
     rand,
     signature::{self, KeyPair},
 };
-/// A fictional versioning CLI
 #[derive(Parser)]
 #[clap(name = "maci-cli")]
 #[clap(about = "A CLI to use MACI in Aleo's blockchain", long_about = None)]
