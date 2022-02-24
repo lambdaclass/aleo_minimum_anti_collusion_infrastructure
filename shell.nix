@@ -18,4 +18,7 @@ mkShell {
     #Adds some libraries needed to compile the project in mac
     AppKit
   ]);
+
+  SERVER_HOST = "127.0.0.1";
+  SERVER_PORT = "3000"; 
 }
