@@ -1,6 +1,6 @@
-use uuid::Uuid;
 use chrono::{DateTime, Duration, Utc};
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
+use uuid::Uuid;
 
 #[derive(Serialize, Deserialize, Debug)]
 pub struct Election {
@@ -26,4 +26,3 @@ impl Election {
         }
     }
 }
-
