@@ -2,7 +2,7 @@
 
 use clap::{Parser, Subcommand};
 #[derive(Parser)]
-#[clap(name = "maci-cli")]
+#[clap(name = "aleo-maci-cli")]
 #[clap(about = "A CLI to use MACI in Aleo's blockchain", long_about = None)]
 struct Cli {
     #[clap(subcommand)]
