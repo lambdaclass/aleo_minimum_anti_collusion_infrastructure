@@ -1,6 +1,11 @@
 // Note: this requires the `derive` feature
 
 use clap::{Parser, Subcommand};
+
+use ring::{
+    rand,
+    signature::{self, KeyPair},
+};
 #[derive(Parser)]
 #[clap(name = "aleo-maci-cli")]
 #[clap(about = "A CLI to use MACI in Aleo's blockchain", long_about = None)]
@@ -22,6 +27,8 @@ enum Commands {
         election_id: String,
     },
     /// Publish a message, which can be a vote, a change of a public key, or both
+    // This should also get the user private key
+    // Current_pk may be changed for the full pair for ease of use
     #[clap(arg_required_else_help = true)]
     Publish {
         /// Current public key
@@ -57,6 +64,22 @@ fn main() {
     match &args.command {
         Commands::GenerateKeyPair {} => {
             println!("Generating key pair ...");
+            // Generate a key pair in PKCS#8 (v2) format.
+            let rng = rand::SystemRandom::new();
+            let pkcs8_bytes = signature::Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
+
+            // Normally the application would store the PKCS#8 file persistently. Later
+            // it would read the PKCS#8 file from persistent storage to use it.
+
+            let key_pair = signature::Ed25519KeyPair::from_pkcs8(pkcs8_bytes.as_ref()).unwrap();
+            let public_key = key_pair.public_key().as_ref();
+
+            println!("Your public key is:\n 0x{}", hex::encode(public_key));
+            //Note: It's using PKCS 8 v2, so it's priv + pub
+            println!(
+                "Your key pair is (priv + pub, PKCS 8 v2) is :\n 0x{}",
+                hex::encode(pkcs8_bytes.as_ref())
+            );
         }
         Commands::SignUp {
             public_key: _,
