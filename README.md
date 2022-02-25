@@ -8,10 +8,11 @@ To use the project you need to have nix installed.
 
 https://nixos.org/download.html
 
-To run the app use:
+To run the CLI use:
 
-`make run`
+`./run_cli.sh`
 
-To test the app use:
+or 
 
-`make test`
+`cargo run --bin aleo-maci-cli`
+
