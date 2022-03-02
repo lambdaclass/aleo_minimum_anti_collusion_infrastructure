@@ -1,0 +1,7 @@
+POST http://127.0.0.1:3000/election/
+Content-Type: application/json
+
+{
+    "sign_up_duration": 10,
+    "voting_duration": 20
+}
