@@ -1,9 +1,14 @@
 [package]
-name = "client"
+name = "aleo-maci-cli"
 version = "0.1.0"
 edition = "2021"
-
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[dependencies]
+clap = { version = "3.1.2", features = ["derive"] }
+ring = "0.16.20"
+#Ring requires us to use this for some functions
+untrusted = "0.9.0"
+hex = "0.4.3"
 [dev-dependencies]
 rusty-hook = "^0.11.2"
