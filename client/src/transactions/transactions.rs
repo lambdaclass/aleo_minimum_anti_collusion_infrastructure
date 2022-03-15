@@ -1,15 +1,11 @@
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     use rand::{rngs::StdRng, SeedableRng};
     use snarkvm::{
         dpc,
-        dpc::{testnet2::Testnet2, Ledger, LedgerProof, Record},
-        prelude::{Address, LedgerTree, Payload, PrivateKey, Transaction},
+        dpc::{testnet2::Testnet2, Ledger, LedgerProof},
+        prelude::{Address, LedgerTree, PrivateKey, Transaction},
         traits::LedgerTreeScheme,
-        traits::Network,
-        utilities,
         utilities::ToBytes,
     };
 
