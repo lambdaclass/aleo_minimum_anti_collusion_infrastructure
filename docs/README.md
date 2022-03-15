@@ -6,7 +6,10 @@ This system is divides in 3 main componentes: a [client](../client), a [server](
 
 ![maci_aleo_Architecture](aleo_maci_overview.png)
 
-You can see detail sequence diagrams for every key operation [here](aleo_maci_sequence_diagram.pdf).
+
+## Sequence Diagrams
+
+You can find detail sequence diagrams for every key operation [here](aleo_maci_sequence_diagram.pdf).
 
 ## Components Overview
 
@@ -28,8 +31,8 @@ The server is responsible of:
 - Do the tally
 - Storing every needed transaction_id to the db.
 
-#### Shared Library
+### Shared Library
 
-The shared library is a rust lib that contains all the necessary code in order to make the client and server communication possible with ease
+The [shared library](../libs) is a rust lib that contains all the necessary code in order to make the client and server communication possible with ease
 
 It also contains common modules to interact with the blockchain from the client or the server, and shared circuits for basic operations, like storing data. 
