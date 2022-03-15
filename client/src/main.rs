@@ -6,6 +6,8 @@ use ring::{
     rand,
     signature::{self, KeyPair},
 };
+
+mod transactions;
 #[derive(Parser)]
 #[clap(name = "aleo-maci-cli")]
 #[clap(about = "A CLI to use MACI in Aleo's blockchain", long_about = None)]
