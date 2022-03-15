@@ -1,5 +1,4 @@
 // Note: this requires the `derive` feature
-
 use clap::{Parser, Subcommand};
 
 use ring::{
