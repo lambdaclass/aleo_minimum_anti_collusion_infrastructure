@@ -19,8 +19,6 @@ The [client](../client) is the program that run locally for each voter, is respo
 - Ask the server to start the tally
 - Verifies that the users votes was properly counted after the tally ends
 
-The client has its own circuits and ledger transaction layer.
-
 ### The Server
 
 The [server](../server) is a rust written http server implemented with the [warp framework](https://github.com/seanmonstar/warp) and makes use of a [Rocksdb](https://github.com/facebook/rocksdb/) instance to store transactions_ids 
@@ -30,10 +28,8 @@ The server is responsible of:
 - Do the tally
 - Storing every needed transaction_id to the db.
 
-The server has its own circuits and ledger transaction layer.
-
 #### Shared Library
 
 The shared library is a rust lib that contains all the necessary code in order to make the client and server communication possible with ease
 
-It also contains common modules to interact with the blockchain from the client or the server
+It also contains common modules to interact with the blockchain from the client or the server, and shared circuits for basic operations, like storing data. 
