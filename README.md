@@ -1,5 +1,23 @@
 # Aleo Voting System
 
+## How to use
+
+To use the project you need to have [nix](https://nixos.org/download.html) installed.
+
+Once installed on your system, run:
+
+`nix-shell`
+
+To start the server run in a second terminal:
+
+`make run_server`
+
+To use the cli run:
+
+`./run_cli.sh`
+
+To get a project technical overview, you can go to the [docs](docs)
+
 ## Overview
 
 Electronic voting system application on Aleo that implements MACI (Minimal anti-collusion infrastructure) with a simple CLI and a server.
@@ -26,15 +44,5 @@ Privacy is the backbone of a secret ballot system and it is why Aleo is the righ
 
 "Minimal Anti-Collusion Infrastructure (MACI) is a set of smart contracts and zero-knowledge circuits upon which developers can build collusion-resistant applications, such as voting systems or quadratic funding platforms. MACI grants resistance to collusion for decentralized applications and it is important because crypto communities are increasingly adopting Decentralised Autonomous Organisations (DAOs) which govern through token voting"[*](https://medium.com/privacy-scaling-explorations/release-announcement-maci-1-0-c032bddd2157). MACI has a use for several other applications such as gaming, gambling and finance.
 
-## How to use
 
-To use the project you need to have [nix](https://nixos.org/download.html) installed.
-
-To run the CLI use:
-
-`./run_cli.sh`
-
-or 
-
-`cargo run --bin aleo-maci-cli`
 
