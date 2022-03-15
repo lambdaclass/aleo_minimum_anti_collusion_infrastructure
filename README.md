@@ -16,11 +16,11 @@ To use the cli run:
 
 `./run_cli.sh`
 
-To get a project technical overview, you can go to the [docs](docs)
-
 ## Overview
 
 Electronic voting system application on Aleo that implements MACI (Minimal anti-collusion infrastructure) with a simple CLI and a server.
+
+To learn more about how it works, you can read the [docs](docs)
 
 ## The Problem
 
