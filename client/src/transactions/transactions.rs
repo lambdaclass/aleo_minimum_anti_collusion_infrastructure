@@ -3,13 +3,16 @@ mod tests {
     use rand::{rngs::StdRng, SeedableRng};
     use snarkvm::{
         dpc,
-        dpc::{testnet2::Testnet2, Ledger, LedgerProof},
-        prelude::{Address, LedgerTree, PrivateKey, Transaction},
+        dpc::{testnet2::Testnet2, Ledger, LedgerProof, Record},
+        prelude::{Address, LedgerTree, Payload, PrivateKey, Transaction},
         traits::LedgerTreeScheme,
+        traits::Network,
+        utilities,
         utilities::ToBytes,
     };
 
     use std::sync::atomic::AtomicBool;
+
     #[test]
     fn local_transaction_test() {
         //This test lasts 25 min approx
@@ -92,6 +95,65 @@ mod tests {
         println!("Latest block: {}", x.to_string());
         println!("Transaction: {}", transaction.to_string());
         println!("Block: {}", x.to_string());
+    }
+
+    //Note this doesn't work, inner circuit fails when the payload
+    //of a dummy is not 0.
+    fn create_store_data_request_noop_dummy() -> dpc::Request<Testnet2> {
+        let mut rng = StdRng::from_entropy();
+
+        // Sample a burner noop private key.
+        // We should  change it for the app address later
+        let noop_private_key = PrivateKey::new(&mut rng);
+        let noop_address = Address::from_private_key(&noop_private_key);
+
+        //Remember 2: Payload size in testnet2
+        //const RECORD_PAYLOAD_SIZE_IN_BYTES: usize = 128;
+
+        let byte_data: Vec<u8> = vec![42; 128];
+
+        let payload_data1 = Payload::<Testnet2>::from(&byte_data);
+
+        let record_with_data1 = Record::new_input(
+            noop_address,
+            0,
+            payload_data1,
+            *<Testnet2>::noop_program_id(),
+            utilities::UniformRand::rand(&mut rng),
+            utilities::UniformRand::rand(&mut rng),
+        )
+        .unwrap();
+
+        let noop_record2 = Record::new_noop_input(noop_address, &mut rng).unwrap();
+
+        //Remember: Testnet2 always have 2 input registers
+        //And two outputs!
+        let mut records = Vec::with_capacity(2);
+
+        records.push(record_with_data1);
+        records.push(noop_record2);
+
+        //let mut records_test = Vec::with_capacity(2);
+
+        //records_test.push(record_with_data1);
+        //records_test.push(noop_record2);
+
+        let ledger_proof1 = LedgerProof::<Testnet2>::default();
+        let ledger_proof2 = LedgerProof::<Testnet2>::default();
+        let ledger_proofs = vec![ledger_proof1, ledger_proof2];
+
+        let request = dpc::Request::<Testnet2>::new(
+            &noop_private_key,
+            records,
+            ledger_proofs,
+            dpc::Operation::Noop,
+            dpc::AleoAmount::ZERO,
+            false,
+            &mut rng,
+        )
+        .unwrap();
+
+        return request;
     }
 
     fn rcp_transaction_test() {
