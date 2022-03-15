@@ -1,6 +1,6 @@
 # Aleo MACI docs
 
-This system is divides in 3 main componentes: a [client](../client), a [server](../server), and a [shared](../) library
+This system is divides in 3 main componentes: a [client](../client), a [server](../server), and a [shared](../libs) library
 
 ## Architecture Diagram
 
