@@ -34,4 +34,6 @@ The server has its own circuits and ledger transaction layer.
 
 #### Shared Library
 
-The shared library is a rust lib that contains all the necessary code in order to make th client and server communication possible with ease
+The shared library is a rust lib that contains all the necessary code in order to make the client and server communication possible with ease
+
+It also contains common modules to interact with the blockchain from the client or the server
