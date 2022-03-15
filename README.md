@@ -2,6 +2,9 @@
 
 ## How to use
 
+
+### Alternative 1: Nix
+
 To use the project you need to have [nix](https://nixos.org/download.html) installed.
 
 Once installed on your system, run:
@@ -15,6 +18,15 @@ To start the server run in a second terminal:
 To use the cli run:
 
 `./run_cli.sh`
+
+
+### Alternative 2: Docker
+
+You can also run the server with docker
+
+`make build_images`
+
+`make run_docker`
 
 ## Overview
 
