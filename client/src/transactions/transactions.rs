@@ -4,7 +4,7 @@ mod tests {
     use snarkvm::{
         dpc,
         dpc::{testnet2::Testnet2, Ledger, LedgerProof, Record},
-        prelude::{Address, Function, LedgerTree, Payload, PrivateKey, Transaction},
+        prelude::{Address, Function, LedgerTree, Payload, PrivateKey, Transaction, ViewKey},
         traits::LedgerTreeScheme,
         traits::Network,
         utilities,
@@ -64,15 +64,12 @@ mod tests {
         println!("Creating ledger ...");
         let mut ledger = Ledger::<Testnet2>::new().unwrap();
         println!("Done");
-        //Here we have to generate a transaction
-        //Here we have to mine the transaction
-        println!("Creating proofs ...");
-        println!("Done");
-        //let virtual_machine = VirtualMachine::<Testnet2>::new(ledger_proof.ledger_root());
         let mut rand1 = StdRng::from_entropy();
         println!("Creating request ...");
         //This request is in fact, a transition
-        let request = create_store_data_request_noop_dummy();
+        let mut rng = StdRng::from_entropy();
+        let new_private_key = PrivateKey::new(&mut rng);
+        let request = create_store_data_request_noop_dummy(new_private_key.clone());
         println!("Done");
         let mut rand2 = StdRng::from_entropy();
         println!("Creating transaction ...");
@@ -92,20 +89,25 @@ mod tests {
             .mine_next_block(new_account, &AtomicBool::new(false), &mut rand3)
             .unwrap();
         let x = ledger.latest_block().unwrap();
+        let chain_transaction = x.transactions().last().unwrap();
         println!("Latest block: {}", x.to_string());
-        println!("Transaction: {}", transaction.to_string());
         println!("Block: {}", x.to_string());
+        let decrypted_records =
+            chain_transaction.to_decrypted_records(&ViewKey::from_private_key(&new_private_key));
+        println!("Decrypted record 0: {}", decrypted_records[0]);
+        println!("Decrypted record 1: {}", decrypted_records[1]);
     }
 
     //Note this doesn't work, inner circuit fails when the payload
     //of a dummy is not 0.
-    fn create_store_data_request_noop_dummy() -> dpc::Request<Testnet2> {
+    fn create_store_data_request_noop_dummy(
+        private_key: PrivateKey<Testnet2>,
+    ) -> dpc::Request<Testnet2> {
         let mut rng = StdRng::from_entropy();
 
         // Sample a burner noop private key.
         // We should  change it for the app address later
-        let noop_private_key = PrivateKey::new(&mut rng);
-        let noop_address = Address::from_private_key(&noop_private_key);
+        let noop_address = Address::from_private_key(&private_key);
 
         //Remember 2: Payload size in testnet2
         //const RECORD_PAYLOAD_SIZE_IN_BYTES: usize = 128;
@@ -158,7 +160,7 @@ mod tests {
         );
 
         let request = dpc::Request::<Testnet2>::new(
-            &noop_private_key,
+            &private_key,
             records,
             ledger_proofs,
             operation,
