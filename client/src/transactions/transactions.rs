@@ -4,7 +4,7 @@ mod tests {
     use snarkvm::{
         dpc,
         dpc::{testnet2::Testnet2, Ledger, LedgerProof, Record},
-        prelude::{Address, LedgerTree, Payload, PrivateKey, Transaction},
+        prelude::{Address, Function, LedgerTree, Payload, PrivateKey, Transaction},
         traits::LedgerTreeScheme,
         traits::Network,
         utilities,
@@ -114,6 +114,8 @@ mod tests {
 
         let payload_data1 = Payload::<Testnet2>::from(&byte_data);
 
+        let payload_data2 = Payload::<Testnet2>::from(&byte_data);
+
         let record_with_data1 = Record::new_input(
             noop_address,
             0,
@@ -130,7 +132,6 @@ mod tests {
         //And two outputs!
         let mut records = Vec::with_capacity(2);
 
-        records.push(record_with_data1);
         records.push(noop_record2);
 
         //let mut records_test = Vec::with_capacity(2);
@@ -142,11 +143,25 @@ mod tests {
         let ledger_proof2 = LedgerProof::<Testnet2>::default();
         let ledger_proofs = vec![ledger_proof1, ledger_proof2];
 
+        let amount = dpc::AleoAmount::ZERO;
+        let function_inputs = dpc::FunctionInputs::<Testnet2>::new(
+            &noop_address,
+            &noop_address,
+            amount,
+            payload_data2,
+        );
+
+        let operation = dpc::Operation::<Testnet2>::Evaluate(
+            dpc::virtual_machine::Noop::<Testnet2>::new().function_id(),
+            dpc::FunctionType::Insert,
+            function_inputs,
+        );
+
         let request = dpc::Request::<Testnet2>::new(
             &noop_private_key,
             records,
             ledger_proofs,
-            dpc::Operation::Noop,
+            operation,
             dpc::AleoAmount::ZERO,
             false,
             &mut rng,
