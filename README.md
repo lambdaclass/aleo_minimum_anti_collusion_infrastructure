@@ -32,8 +32,6 @@ You can also run the server with docker
 
 Electronic voting system application on Aleo that implements MACI (Minimal anti-collusion infrastructure) with a simple CLI and a server.
 
-To learn more about how it works, you can read the [docs](docs)
-
 ## The Problem
 
 Electronic voting is a controversial topic that awakens different opinions regarding its implementation and vulnerability. While it is currently being used by several organizations and governments, those that criticize it claim that electronic voting is not secure since it compromises the anonymity of the voter and the safety of the election. 
@@ -62,11 +60,11 @@ This system is divided in 3 main components: a [client](../client), a [server](.
 
 ## Architecture Diagram
 
-![maci_aleo_Architecture](docs/aleo_maci_overview.png)
+![maci_aleo_Architecture](diagrams/aleo_maci_overview.png)
 
 ## Sequence Diagrams
 
-You can find detailed sequence diagrams for every key operation [here](docs/aleo_maci_sequence_diagram.pdf).
+You can find detailed sequence diagrams for every key operation [here](diagrams/aleo_maci_sequence_diagram.pdf).
 
 ## Components Overview
 
