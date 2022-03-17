@@ -94,8 +94,6 @@ mod tests {
         println!("Decrypted record 1: {}", decrypted_records[1]);
     }
 
-    //Note this doesn't work, inner circuit fails when the payload
-    //of a dummy is not 0.
     fn create_store_data_request_noop_dummy(
         private_key: PrivateKey<Testnet2>,
     ) -> dpc::Request<Testnet2> {
