@@ -11,6 +11,7 @@ in
 mkShell {
   buildInputs = [
     git
+    rocksdb
     nixpkgs.rust-bin.stable.latest.default
   ]
   ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
