@@ -7,7 +7,7 @@ use snarkvm::{
 
 /// Creates a DPC request to store data in one record
 /// To be used in a DPC Transaction
-fn create_store_data_request(
+pub fn create_store_data_request(
     private_key: PrivateKey<Testnet2>,
     data: Vec<u8>,
 ) -> dpc::Request<Testnet2> {
