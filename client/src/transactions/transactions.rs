@@ -54,7 +54,6 @@ pub fn create_store_data_request(
         &mut rng,
     )
     .unwrap();
-
     return request;
 }
 
@@ -180,5 +179,59 @@ mod tests {
         let chain_transaction = x.transactions().last().unwrap();
         println!("Block: {}", x.to_string());
         println!("Transaction {}", chain_transaction.to_string());
+    }
+
+    #[test]
+    fn local_transaction_with_events_test() {
+        //This test lasts 25 min approx
+        println!("Creating ledger ...");
+        let mut ledger = Ledger::<Testnet2>::new().unwrap();
+        println!("Done");
+        println!("Creating request ...");
+        //This request is in fact, a transition
+        let mut rng = StdRng::from_entropy();
+        let new_private_key = PrivateKey::new(&mut rng);
+        let request = create_store_data_request(new_private_key.clone(), vec![42; 128], false);
+        println!("Done");
+        let mut rand2 = StdRng::from_entropy();
+        println!("Creating transaction ...");
+
+        let event = Event::Custom("Hola!".as_bytes().to_vec());
+        let event2 = Event::Custom("Mundo!".as_bytes().to_vec());
+
+        let transaction =
+            VirtualMachine::<Testnet2>::new(LedgerProof::<Testnet2>::default().ledger_root())
+                .unwrap()
+                .add_event(event)
+                .unwrap()
+                .add_event(event2)
+                .unwrap()
+                .execute(&request, &mut rng)
+                .unwrap()
+                .finalize()
+                .unwrap();
+
+        println!("Done");
+        println!("Adding unconfirmed transaction ...");
+        ledger.add_unconfirmed_transaction(&transaction).unwrap();
+        println!("Done");
+        let mut rand64 = StdRng::from_entropy();
+        let new_account: Address<Testnet2> =
+            Address::from_private_key(&PrivateKey::<Testnet2>::new(&mut rand64));
+        let mut rand3 = StdRng::from_entropy();
+        let y = ledger.latest_block().unwrap();
+        println!("Latest block before transaction: {}", y.to_string());
+        ledger
+            .mine_next_block(new_account, &AtomicBool::new(false), &mut rand3)
+            .unwrap();
+        let x = ledger.latest_block().unwrap();
+        let chain_transaction = x.transactions().last().unwrap();
+        println!("Latest block: {}", x.to_string());
+        println!("Block: {}", x.to_string());
+        let decrypted_records =
+            chain_transaction.to_decrypted_records(&ViewKey::from_private_key(&new_private_key));
+        println!("Decrypted record 0: {}", decrypted_records[0]);
+        println!("Events 0: {}", chain_transaction.events()[0]);
+        println!("Events 1: {}", chain_transaction.events()[1]);
     }
 }
