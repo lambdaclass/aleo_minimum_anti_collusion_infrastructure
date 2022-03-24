@@ -22,8 +22,8 @@ secrecy = "0.8.0"
 
 [dependencies.snarkvm]
 #path = "../snarkVM"
-git = "https://github.com/AleoHQ/snarkVM"
-rev = "040825e"
+git = "https://github.com/AleoHQ/snarkVM" 
+tag = "v0.8.0"
 features = ["algorithms", "curves", "fields", "gadgets", "parameters", "parameters_no_std_out", "r1cs", "utilities"]
 
 [dependencies.serde]
