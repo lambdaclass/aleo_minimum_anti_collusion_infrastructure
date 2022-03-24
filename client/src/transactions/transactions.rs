@@ -221,7 +221,7 @@ mod tests {
 
     /*
 
-    This no longer works.
+    This no longer works with SnarkVM 0.8.
     #[test]
     fn local_transaction_with_events_test() {
         //This test lasts 25 min approx
