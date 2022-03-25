@@ -57,7 +57,7 @@ pub fn create_store_data_request(
 }
 
 /// Creates a transaction to store data in a register
-pub fn create_store_data_in_event_transaction(
+pub fn create_store_data_transaction(
     data: Vec<u8>,
     is_public: bool,
 ) -> Transaction<Testnet2> {

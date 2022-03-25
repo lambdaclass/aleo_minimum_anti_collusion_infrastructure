@@ -115,7 +115,7 @@ fn main() {
             println!("Generating the transaction...");
             println!("This may take a while");
 
-            let transaction = transactions::create_store_data_in_event_transaction(
+            let transaction = transactions::create_store_data_transaction(
                 message_data.as_bytes().to_vec(),
                 true,
             );
