@@ -28,6 +28,7 @@ enum Commands {
         election_id: String,
     },
     /// Publish a message, which can be a vote, a change of a public key, or both
+    /// As of this version only the vote option matters
     // This should also get the user private key
     // Current_pk may be changed for the full pair for ease of use
     #[clap(arg_required_else_help = true)]
