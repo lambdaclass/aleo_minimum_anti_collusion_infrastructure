@@ -44,7 +44,7 @@ pub fn create_store_data_request(
         function_inputs,
     );
 
-    let request = dpc::Request::<Testnet2>::new(
+    dpc::Request::<Testnet2>::new(
         &private_key,
         records,
         ledger_proofs,
@@ -53,9 +53,7 @@ pub fn create_store_data_request(
         is_public,
         &mut rng,
     )
-    .unwrap();
-
-    request
+    .unwrap()
 }
 
 /// Creates a transaction to store data in a register
