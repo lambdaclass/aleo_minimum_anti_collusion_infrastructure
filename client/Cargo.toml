@@ -37,15 +37,3 @@ version = "1.0"
 [dependencies.thiserror]
 version = "1.0"
 
-[dependencies.http-client]
-version = "6.2"
-features = ["native_client"]
-default-features = false
-
-[dependencies.surf]
-version = "2.3"
-
-[dependencies.futures]
-version = "0.3"
-
-
