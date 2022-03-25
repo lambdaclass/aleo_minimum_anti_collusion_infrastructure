@@ -91,3 +91,101 @@ The server is responsible of:
 The [shared library](libs) is a rust lib that contains all the necessary code in order to make the client and server communication possible with ease.
 
 It also contains common modules to interact with the blockchain from the client or the server, and shared circuits for basic operations, like storing data. 
+
+# Maci Flow and Encryption Overview
+
+This is an overview of the flow of the program, with a focus on the encryption part of it. Additional processes to handle validations and commitments, and structures like merkle tree to optimize the process, may be added.
+
+Note this also uses a two step process to tally the vote, which is better to understand how the keys are used, but may not reflect the final implementation.
+
+
+## Voter process
+
+1. Registers, submitting a public key on the blockchain.
+
+2. Sends a message to vote or change his public key
+
+A message always has following parts:
+    - An encrypted user public key
+    - An encrypted vote (can be a nil)
+    - A non encrypted user public key.
+
+For the encryption, the ECDH protocol is used. In it, both parties uses the same shared key to encrypt and decrypt messages. This shared key, in the case of the voter, is made by multiplying the operator public key with the voter private key. The operator public key, is always avaible, and can be found in the blockchain by the client.
+
+Having the shared key, the message can be encrypted with any symetric key cipher. For efficiency, Poseidon, a snark friendly  one is used. Others like mimc could be used too.
+
+## Tallier process
+
+    
+### Two step solution:
+
+Once again, here we focus on the encryption part, so a lot of details are ignored (Merkle proofs, signature validation, additional commitments needed, etc)
+
+#### Update state
+
+- Generate an off chain copy of the signed up users and their keys
+- For each message (in a circuit for proof submitting AND offchain to get the values)
+    - If the non encrypted public key is found in the local state/circuit state
+        -  Make a shared key with the operator private key, and the non encrypted key
+        -  Decrypt the message
+        -  Update the local state/circuit state with the decrypted public key
+    - Set a new public key for the user in the offchain copy to the updated one 
+- Publish the merkle root of the updated votes along with the ZKP (circuit output).
+
+Note that in this example, we are processing all messages in one go.
+
+This same process can be applied in batches, if the we want to have checkpoints from where to continue. To do so, we need to generate intermediate merkle roots in the circuit, and add the batched merkle tree to the state tree. 
+
+#### Tally the vote
+
+- Using the merkle root and the updated state as input, verify they match
+- For each message, having the updated state as message (in a circuit)
+    - If the public key on the message matches one in the updated state tree, decrypt by making a shared key with the operator private key, and tally the vote, else skip.
+- Publish a commitment of the results as the circuit output, and the results as plain data. 
+
+Note this can also be done in batches
+
+## Verifying the tally
+
+Any observer can verify the data of the results matches the comitment, and doing so, know it's the result of an operator executing the circuit.
+
+Having the list of used votes, any observer can verify the merkle root of it matches the one that was used as input on the circuit. 
+
+Having it's own vote, any voter can see his vote was used to make the merkle root that was used on the circuit.
+
+
+## Annex 1: Deceiving a briber
+
+One of the key aspects of MACI is to not let a Briber and a Voter collude, by not letting them being able to trust each other. For this sake, the following subterfuge techniques can be used:
+
+
+### Vote change
+
+- The user can always change his vote, so not seeing the messages, the briber can't pay before the voting ends, and after it ends, the user can't be sure he will get paid. 
+
+- Note this technique may be bypassed if there is a smart contract involved, to solve the issue both parties can't time the payment.
+
+
+### Fake votes 
+
+- The user may use a non valid public key to encrypt the votes, and even give his private key, and it won't matter, since the vote will be discarded. 
+
+- To disrupt even further programs that requires a clean flow of votes, any user or machine may publish fake votes, saying the message belongs to a public key that it's not of theirs.
+
+### The shared key case
+
+The most troublesome scenario is a user sharing it's initial shared key. In this case, a briber is able to see the user's messages. 
+
+To deceive the briber in this case, the user may publish a message with his true Public Key, but encrypt it with a non valid pair of keys.
+
+Let's call the legitimate pair of keys (k, K), and the fake ones (fk,fK)
+
+Let's call the operator pair of keys (ok, oK) 
+
+Let's call the legitimate shared key s = k\*oK and the fake shared key fs = fk\*oK
+
+The voter will then submit a message, exposing the public key K, and encrypting the vote with fs.
+
+A briber can then decrypt the message with fs, but can't know if that fs comes from K or fK. 
+
+When the operator decrypts, he will use the shared key ok\*K that doesn't match the one with the encrypted votes, the message won't be properly formatted, and so it will be discarded.
