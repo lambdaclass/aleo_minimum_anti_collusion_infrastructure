@@ -58,7 +58,10 @@ pub fn create_store_data_request(
 }
 
 /// Creates a transaction to store data in a register
-pub fn create_store_data_in_event_transaction(data: Vec<u8>, is_public: bool) {
+pub fn create_store_data_in_event_transaction(
+    data: Vec<u8>,
+    is_public: bool,
+) -> Transaction<Testnet2> {
     let mut rand = StdRng::from_entropy();
 
     // The account should be generated in an upper layer
@@ -68,7 +71,7 @@ pub fn create_store_data_in_event_transaction(data: Vec<u8>, is_public: bool) {
 
     let request = create_store_data_request(new_private_key.clone(), data, is_public);
 
-    Transaction::new(LedgerTree::<Testnet2>::default(), &request, &mut rand).unwrap();
+    return Transaction::new(LedgerTree::<Testnet2>::default(), &request, &mut rand).unwrap();
 }
 #[cfg(test)]
 mod tests {
