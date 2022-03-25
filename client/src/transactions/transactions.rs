@@ -69,7 +69,7 @@ pub fn create_store_data_in_event_transaction(
     let new_private_key = new_account.private_key();
     let request = create_store_data_request(new_private_key.clone(), data, is_public);
 
-    return Transaction::new(LedgerTree::<Testnet2>::default(), &request, &mut rand).unwrap();
+    Transaction::new(LedgerTree::<Testnet2>::default(), &request, &mut rand).unwrap()
 }
 #[cfg(test)]
 mod tests {
