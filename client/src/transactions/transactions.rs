@@ -57,10 +57,7 @@ pub fn create_store_data_request(
 }
 
 /// Creates a transaction to store data in a register
-pub fn create_store_data_transaction(
-    data: Vec<u8>,
-    is_public: bool,
-) -> Transaction<Testnet2> {
+pub fn create_store_data_transaction(data: Vec<u8>, is_public: bool) -> Transaction<Testnet2> {
     let mut rand = StdRng::from_entropy();
     // The account should be generated in an upper layer
     let new_account = Account::<Testnet2>::new(&mut rand);

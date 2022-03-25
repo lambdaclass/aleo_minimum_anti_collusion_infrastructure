@@ -115,10 +115,8 @@ fn main() {
             println!("Generating the transaction...");
             println!("This may take a while");
 
-            let transaction = transactions::create_store_data_transaction(
-                message_data.as_bytes().to_vec(),
-                true,
-            );
+            let transaction =
+                transactions::create_store_data_transaction(message_data.as_bytes().to_vec(), true);
             println!("Submitting the transaction to the blockchain");
 
             let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
