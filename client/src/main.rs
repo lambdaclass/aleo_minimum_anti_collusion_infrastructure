@@ -56,6 +56,12 @@ enum Commands {
         /// Election id
         election_id: String,
     },
+    /// Generates a key pair to use with other commands
+    #[clap(arg_required_else_help = true)]
+    StoreMessage {
+        /// Up to 128 bytes of data as a string
+        message_data: String,
+    },
 }
 
 fn main() {
@@ -105,6 +111,14 @@ fn main() {
         }
         Commands::StartTally { election_id: _ } => {
             println!("Starting tally ...");
+        }
+        Commands::StoreMessage { message_data } => {
+            println!("Generating the transaction...");
+            println!("This may take a while");
+            transactions::create_store_data_in_event_transaction(
+                message_data.as_bytes().to_vec(),
+                true,
+            );
         }
     }
 }

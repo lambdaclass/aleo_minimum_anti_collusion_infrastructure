@@ -2,7 +2,7 @@ use rand::{rngs::StdRng, SeedableRng};
 use snarkvm::{
     dpc,
     dpc::{testnet2::Testnet2, LedgerProof, Record},
-    prelude::{Address, Function, Payload, PrivateKey},
+    prelude::{Account, Address, Function, LedgerTree, Payload, PrivateKey, Transaction},
 };
 
 /// Creates a DPC request to store data in one record
@@ -58,11 +58,17 @@ pub fn create_store_data_request(
 }
 
 /// Creates a transaction to store data in a register
-pub fn create_store_data_in_event_transaction() {
-    let ledger_proof = LedgerProof::<Testnet2>::default();
-    let ledger_proof2 = LedgerProof::<Testnet2>::default();
+pub fn create_store_data_in_event_transaction(data: Vec<u8>, is_public: bool) {
     let mut rand = StdRng::from_entropy();
-    let request = dpc::Request::new_noop(vec![ledger_proof, ledger_proof2], &mut rand).unwrap();
+
+    // The account should be generated in an upper layer
+    let new_account = Account::<Testnet2>::new(&mut rand);
+    let new_private_key = new_account.private_key();
+    let account_view_key = new_account.view_key();
+
+    let request = create_store_data_request(new_private_key.clone(), data, is_public);
+
+    Transaction::new(LedgerTree::<Testnet2>::default(), &request, &mut rand).unwrap();
 }
 #[cfg(test)]
 mod tests {
