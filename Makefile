@@ -1,3 +1,6 @@
+init:
+	cargo install leo-lang
+	
 build:
 	cargo build
 
