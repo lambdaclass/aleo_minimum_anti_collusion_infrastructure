@@ -49,7 +49,6 @@ function main(votes: [u32; 32]) -> field {
                         merkle_tree_layer[j*step], 
                         merkle_tree_layer[(j+1)*step]),
                     a_field);
-                should_skip = should_skip + 1;
             }
         }
     }
