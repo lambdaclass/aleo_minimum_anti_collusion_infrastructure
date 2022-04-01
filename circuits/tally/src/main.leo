@@ -18,11 +18,6 @@ function main(votes: [u32; 32]) -> field {
             }
         }
     }
-
-    //TO DO: Generalize (To do so, implement the mod function)
-    let first_row: [field; 4] = [0,0,0,0];
-    let second_row: [field; 2] = [0,0];
-    let root: field = 0;
     
     let a_field: field = 123123123; 
 

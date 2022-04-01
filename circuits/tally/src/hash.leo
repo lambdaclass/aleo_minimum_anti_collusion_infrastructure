@@ -232,7 +232,6 @@ circuit Hash {
         return x;
     }
 
-    //used to
     function decrypt_mimc(x:field, secret_key:field) -> field{
         const constant: [field;220] =
         [
@@ -464,10 +463,6 @@ circuit Hash {
         return x;
     }
 
-    function mimc_2_1(x:field, y:field, secret_key:field){
-        
-    }
-    
     //Note: Check for a better way to do this.
     //Maybe we can use a sponge
     function pack(a: field, b: field) -> field{
