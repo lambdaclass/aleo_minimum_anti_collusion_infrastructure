@@ -1,8 +1,6 @@
 // The 'tally' main function.
 import hash.(Hash);
 
-//We assume 32 votes max for testing purpuses
-//Note we must return an u32 in Leo 1.5.3
 function main(votes: [u32; 32]) -> field {
 
     let tally_result: u32 = 0;
