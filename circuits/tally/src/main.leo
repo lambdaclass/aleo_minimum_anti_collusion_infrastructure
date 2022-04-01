@@ -21,21 +21,36 @@ function main(votes: [u32; 32]) -> field {
     
     let a_field: field = 123123123; 
 
-    let merkle_tree_layer = vote_result;
+    let merkle_tree_leaves = vote_result;
 
     for i in 0..8{
-        merkle_tree_layer[i] = Hash::mimc(vote_result[i], a_field);
+        merkle_tree_leaves[i] = Hash::mimc(vote_result[i], a_field);
     }
 
-    //for SQRT(max_options), 8 -> 2
     //Computes a merkle root, that we use as a commitment
+    let padding = [0field;25];
+    //We need to 
+    //add some padding until the if inside the for gets fixed
+    //else, it gets an out of bounds error 
+    let merkle_tree_layer = [...merkle_tree_leaves, ...padding];
+
+    //for SQRT(max_options) - 1, 8 -> 3
     for i in 0..3{
-        //For max_options / 2
-        for j in 0..4{
-            // Depending on the size of the options stopping the loop
-            // Costs more constraints than just keeping hashing
-            // if (j < (4/(2**i))){
-            merkle_tree_layer[j] = Hash::mimc(Hash::pack(merkle_tree_layer[j*2], merkle_tree_layer[(j*2)+1]), a_field);
+        console.log("Round {} of Hashes", i);
+        //For max_options
+        for j in 0..8{
+            let step = 2**(i);
+            // This is the modulus
+            let should_skip = j-(j/2)*2;
+            if (((j+1)*step) < 8) && (should_skip == 0){
+                console.log("Hashing: {} {}", j*step, (j+1)*step);
+                merkle_tree_layer[j] = 
+                    Hash::mimc(Hash::pack(
+                        merkle_tree_layer[j*step], 
+                        merkle_tree_layer[(j+1)*step]),
+                    a_field);
+                should_skip = should_skip + 1;
+            }
         }
     }
 
