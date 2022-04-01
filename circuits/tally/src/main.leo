@@ -7,9 +7,9 @@ function main(votes: [u32; 32]) -> field {
 
     let vote_result: [field;8] = [0,0,0,0,0,0,0,0];
 
+    //For each vote
     for i in 0..32 {
-        //We assume 2 possible candidates for testing purposes
-        //We still use an u32 since we can't define an u8 in Leo 1.5.3
+        //Add the vote to the results
         for j in 0..8{
             if (votes[i] == j){
                 vote_result[j] = vote_result[j] + 1;
@@ -17,6 +17,8 @@ function main(votes: [u32; 32]) -> field {
         }
     }
     
+    //We need some field to use mimc
+    //Since we don't care about encryption it can be anything
     let a_field: field = 123123123; 
 
     let merkle_tree_leaves = vote_result;
@@ -32,7 +34,7 @@ function main(votes: [u32; 32]) -> field {
     //else, it gets an out of bounds error 
     let merkle_tree_layer = [...merkle_tree_leaves, ...padding];
 
-    //for SQRT(max_options) - 1, 8 -> 3
+    //for 0..SQRT(max_options), 8 -> 3
     for i in 0..3{
         console.log("Round {} of Hashes", i);
         //For max_options
