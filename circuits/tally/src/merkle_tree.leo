@@ -46,7 +46,6 @@ circuit MerkleTree {
 // CODE FOR TESTING BELOW
 
 circuit MerkleTreeForTest {
-    // CODE FOR TESTING PURPOSES BELOW
     function dummy_hash_plus_one(value:field) -> field{
         return value+1;
     }
