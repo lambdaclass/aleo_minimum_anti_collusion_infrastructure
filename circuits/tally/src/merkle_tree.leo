@@ -21,10 +21,10 @@ circuit MerkleTree {
         //else, it gets an out of bounds error 
         let array_of_leaves = [...hashed_array, ...padding];
 
-        for i in 0..log2_amount_leaves{
+        for i in 0..log2_amount_leaves {
             console.log("Round {} of Hashes", i);
             //For max_options
-            for j in 0..8{
+            for j in 0..amount_of_leaves {
                 let step = 2**(i);
                 // This is the modulus
                 let should_skip = j-(j/2)*2;
