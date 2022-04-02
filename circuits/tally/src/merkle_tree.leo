@@ -3,13 +3,14 @@ import hash.(Hash);
 circuit MerkleTree {
     function generate_root(array: [field;8]) -> field{
 
+        const amount_of_leaves: u32 = 8;
+        const log2_amount_leaves: u32 = 3;
         //A field to use with mimc
         //Since we don't care about the encryption it can be any const
         const a_field: field = 123123123; 
-
         let hashed_array = array;
 
-        for i in 0..8{
+        for i in 0..amount_of_leaves{
             hashed_array[i] = Hash::mimc(array[i], a_field);
         }
 
@@ -20,8 +21,7 @@ circuit MerkleTree {
         //else, it gets an out of bounds error 
         let array_of_leaves = [...hashed_array, ...padding];
 
-        //for 0..SQRT(max_options), 8 -> 3
-        for i in 0..3{
+        for i in 0..log2_amount_leaves{
             console.log("Round {} of Hashes", i);
             //For max_options
             for j in 0..8{
