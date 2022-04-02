@@ -25,8 +25,8 @@ function main(votes: [u32; 32]) -> field {
 
 
 // TESTING CODE BELOW
-// since we can't test modules by their own,
-// all tests are here
+// TO DO: Modules can't have tests, unless they are projects
+//  -> Instantiate projects for each module to test
 @test
 function test_merkle_tree(){
         let array: [field;8] = [0,0,1,1,0,1,0,1];
