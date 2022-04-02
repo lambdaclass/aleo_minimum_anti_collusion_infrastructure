@@ -9,7 +9,8 @@ function main(votes: [u32; 32]) -> field {
 
     //For each vote
     for i in 0..32 {
-        //Add the vote to the results
+        //For each category
+        //Add the vote to the field with the results
         for j in 0..8{
             if (votes[i] == j){
                 vote_result[j] = vote_result[j] + 1;
@@ -43,8 +44,8 @@ function main(votes: [u32; 32]) -> field {
             // This is the modulus
             let should_skip = j-(j/2)*2;
             if (((j+1)*step) < 8) && (should_skip == 0){
-                console.log("Hashing: {} {}", j*step, (j+1)*step);
-                merkle_tree_layer[j] = 
+                console.log("Hashing: {} {} in position: {}", j*step, (j+1)*step, j*step);
+                merkle_tree_layer[j*step] = 
                     Hash::mimc(Hash::pack(
                         merkle_tree_layer[j*step], 
                         merkle_tree_layer[(j+1)*step]),
