@@ -1,7 +1,7 @@
 circuit Hash {
 
+    // MIMC RELATED CODE
     function mimc(x:field, secret_key:field) -> field{
-        //This should be an array of constants
         const constant: [field;220] =
             [
                 0,
@@ -469,5 +469,61 @@ circuit Hash {
         return a*b;
     }
 
+    //POSEIDON RELATED CODE
+
+    //We base our implementation in the Poseidon RS implementation 
+
+    //TO DO: Add constants and test
+    //Poseidon for 2 inputs and one output, to use
+    //in binary merkle trees
+    function poseidon_2_1(a_field: field, another_field: field) -> field {
+        //t = input len + 1
+        const t: field = 3;
+        const n_rounds_f: u32 = 8;
+        // vec![56, 57, 56, 60, 60, 63, 64, 63],
+        const n_rounds_p: u32 = 57;
+        //Field array of size t
+        let state: [field;3] = [0,a_field,another_field];
+
+        for i in 0..(n_rounds_f + n_rounds_p) {
+            Hash::ark(state);
+            Hash::sbox(n_rounds_f, n_rounds_p, state, i);
+            Hash::mix(state);
+        }
+        return state[0];
+    }
+
+    function ark(state: [field;3]) -> [field;3]{
+        const constants: field = 42;
+        let new_state = state;
+        //t = 3;
+        for i in 0..3 {
+           // TO DO: Use the real list of C constants
+           new_state[i] += constants;
+        }
+        return new_state;
+    }
+
+    function sbox(n_rounds_f: u32, n_rounds_p: u32, state: [field;3], i: u32) -> [field;3]{
+        if i < n_rounds_f / 2 || i >= n_rounds_f / 2 + n_rounds_p {
+            for j in 0..3 {
+                state[j] = state[j]*state[j]*state[j];
+            }
+        } else {
+            state[0] = state[0]*state[0]*state[0];
+        }
+        return state;
+    }
+
+    function mix(state: [field;3]) -> [field;3] {
+        for i in 0..3 {
+            for j in 0..3 {
+                // TO DO: Use the real list of M constants
+                // state[i] = m[i][j] * state[j] + m[i][j]
+                state[i] = 3 * state[j] + 3;
+            }
+        }
+        return state;
+    }
 }
 
