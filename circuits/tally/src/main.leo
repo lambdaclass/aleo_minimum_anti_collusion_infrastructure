@@ -48,3 +48,10 @@ function test_merkle_tree(){
         console.log("Root is: {}", root);
         console.assert(root == 19field);
 }
+
+@test
+function test_poseidon(){
+        let hash = Hash::poseidon_2_1(1field, 2field);
+        console.log("Prime field modulus: {}", 0field - 1);
+        console.log("Hash is: {}", hash);
+}
