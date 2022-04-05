@@ -1,4 +1,4 @@
-import hash.(Hash);
+import poseidon.(Poseidon);
 
 circuit MerkleTree {
     function generate_root(array: [field;8]) -> field{
@@ -11,7 +11,7 @@ circuit MerkleTree {
         let hashed_array = array;
 
         for i in 0..amount_of_leaves{
-            hashed_array[i] = Hash::mimc(array[i], a_field);
+            hashed_array[i] = Poseidon::poseidon_2_1(array[i], a_field);
         }
 
         //Computes a merkle root, that we use as a commitment
@@ -31,10 +31,10 @@ circuit MerkleTree {
                 if (((j+1)*step) < 8) && (should_skip == 0){
                     console.log("Hashing: {} {} in position: {}", j*step, (j+1)*step, j*step);
                     array_of_leaves[j*step] = 
-                        Hash::mimc(Hash::pack(
+                        Poseidon::poseidon_2_1(
                             array_of_leaves[j*step], 
-                            array_of_leaves[(j+1)*step]),
-                        a_field);
+                            array_of_leaves[(j+1)*step]
+                        );
                 }
             }
         }
