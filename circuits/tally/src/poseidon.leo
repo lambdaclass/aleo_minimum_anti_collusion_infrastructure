@@ -23,12 +23,11 @@ circuit Poseidon {
     
     */
     function poseidon_2_1(a_field: field, another_field: field) -> field {
+
+        const n_rounds_f: u32 = 8;
+        const n_rounds_p: u32 = 57;
         //t = input len + 1
         const t: u32 = 3;
-        const n_rounds_f: u32 = 8;
-        // vec![56, 57, 56, 60, 60, 63, 64, 63],
-        const n_rounds_p: u32 = 57;
-        //Field array of size t
         let state: [field;3] = [0,a_field,another_field];
 
         for i in 0..(n_rounds_f + n_rounds_p) {
