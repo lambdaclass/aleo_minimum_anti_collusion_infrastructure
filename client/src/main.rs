@@ -137,7 +137,7 @@ fn main() {
             let client = reqwest::blocking::Client::new();
             //TO DO: Use our own Aleo node client, or pass it as an argument
             let res = client
-                .post("http://188.166.7.13:3032/")
+                .post("http://47.251.15.99/")
                 .json(&request_json)
                 .send()
                 .unwrap();
