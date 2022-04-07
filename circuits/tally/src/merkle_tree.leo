@@ -38,7 +38,9 @@ function generate_root8(array: [field;8]) -> field{
         const log2_amount_leaves: u32 = 5;
 
         //Computes a merkle root, that we use as a commitment
-        let padding = [0field;512];
+        // Padding = amount_of_leaves*(amount_of_leaves*0.5) - amount_of_leaves - 1 = 481
+        // 32 * 16 -  32 - 1 = 481
+        let padding = [0field;481];
         //We need to 
         //add some padding until the if inside the for gets fixed
         //else, it gets an out of bounds error 
