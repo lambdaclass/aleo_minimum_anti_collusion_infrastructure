@@ -8,8 +8,9 @@ use crate::services::kvstore::{KVStore, RocksDB};
 
 #[tokio::main] // 2.
 async fn main() {
-    let filters = election_filters::get_filters();
     let db: RocksDB = KVStore::init("./.tmp/rocksdb");
+
+    let filters = election_filters::get_filters(db);
 
     warp::serve(filters) // 5.
         .run(([127, 0, 0, 1], 3000)) // 6.

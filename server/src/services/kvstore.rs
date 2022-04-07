@@ -1,5 +1,6 @@
 use rocksdb::DB;
 use std::sync::Arc;
+use warp::Filter;
 
 pub trait KVStore {
     fn init(file_path: &str) -> Self;
@@ -45,4 +46,10 @@ impl KVStore for RocksDB {
     fn delete(&self, k: &str) -> bool {
         self.db.delete(k.as_bytes()).is_ok()
     }
+}
+
+pub fn with_db(
+    db: RocksDB,
+) -> impl Filter<Extract = (RocksDB,), Error = std::convert::Infallible> + Clone {
+    warp::any().map(move || db.clone())
 }
