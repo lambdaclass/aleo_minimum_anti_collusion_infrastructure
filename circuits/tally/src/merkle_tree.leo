@@ -1,25 +1,16 @@
 import poseidon.(Poseidon);
 
 circuit MerkleTree {
-    function generate_root8(array: [field;8]) -> field{
+function generate_root8(array: [field;8]) -> field{
 
         const amount_of_leaves: u32 = 8;
         const log2_amount_leaves: u32 = 3;
-        //A field to use with mimc
-        //Since we don't care about the encryption it can be any const
-        const a_field: field = 123123123; 
-        let hashed_array = array;
-
-        for i in 0..amount_of_leaves{
-            hashed_array[i] = Poseidon::poseidon_2_1(array[i], a_field);
-        }
-
         //Computes a merkle root, that we use as a commitment
         let padding = [0field;25];
         //We need to 
         //add some padding until the if inside the for gets fixed
         //else, it gets an out of bounds error 
-        let array_of_leaves = [...hashed_array, ...padding];
+        let array_of_leaves = [...array, ...padding];
 
         for i in 0..log2_amount_leaves {
             console.log("Round {} of Hashes", i);
@@ -45,21 +36,13 @@ circuit MerkleTree {
 
         const amount_of_leaves: u32 = 32;
         const log2_amount_leaves: u32 = 5;
-        //A field to use with mimc
-        //Since we don't care about the encryption it can be any const
-        const a_field: field = 123123123; 
-        let hashed_array = array;
-
-        for i in 0..amount_of_leaves{
-            hashed_array[i] = Poseidon::poseidon_2_1(array[i], a_field);
-        }
 
         //Computes a merkle root, that we use as a commitment
         let padding = [0field;512];
         //We need to 
         //add some padding until the if inside the for gets fixed
         //else, it gets an out of bounds error 
-        let array_of_leaves = [...hashed_array, ...padding];
+        let array_of_leaves = [...array, ...padding];
 
         for i in 0..log2_amount_leaves {
             console.log("Round {} of Hashes", i);
