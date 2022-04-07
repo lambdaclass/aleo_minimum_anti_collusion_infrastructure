@@ -58,7 +58,7 @@ enum Commands {
         /// Election id
         election_id: String,
     },
-    /// Generates a key pair to use with other commands
+    /// [FOR TEST] stores data in the blockchain
     #[clap(arg_required_else_help = true)]
     StoreMessage {
         /// Up to 128 bytes of data as a string
