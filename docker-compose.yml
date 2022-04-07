@@ -3,7 +3,7 @@ services:
     build:
       context: ./server
     ports:
-      - 3000:3000
+      - 5000:3000
   
   client:
     build:

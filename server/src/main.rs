@@ -9,6 +9,6 @@ async fn main() {
     let filters = election_filters::get_filters();
 
     warp::serve(filters) // 5.
-        .run(([127, 0, 0, 1], 3000)) // 6.
+        .run(([0, 0, 0, 0], 3000)) // 6.
         .await;
 }

@@ -27,5 +27,7 @@ COPY --from=build /aleo_voting_system/target/release/aleo-maci-server .
 #expose server port
 EXPOSE 3000
 
+RUN chmod +x ./aleo-maci-server
+
 # set the startup command to run your binary
 CMD ["./aleo-maci-server"]
