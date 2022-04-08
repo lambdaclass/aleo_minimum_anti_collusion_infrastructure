@@ -1,11 +1,13 @@
+mod rcp;
+mod transactions;
 // Note: this requires the `derive` feature
-
 use clap::{Parser, Subcommand};
-
 use ring::{
     rand,
     signature::{self, KeyPair},
 };
+
+use snarkvm::prelude::ToBytes;
 #[derive(Parser)]
 #[clap(name = "aleo-maci-cli")]
 #[clap(about = "A CLI to use MACI in Aleo's blockchain", long_about = None)]
@@ -27,6 +29,7 @@ enum Commands {
         election_id: String,
     },
     /// Publish a message, which can be a vote, a change of a public key, or both
+    /// As of this version only the vote option matters
     // This should also get the user private key
     // Current_pk may be changed for the full pair for ease of use
     #[clap(arg_required_else_help = true)]
@@ -55,8 +58,13 @@ enum Commands {
         /// Election id
         election_id: String,
     },
+    /// [FOR TEST] stores data in the blockchain
+    #[clap(arg_required_else_help = true)]
+    StoreMessage {
+        /// Up to 128 bytes of data as a string
+        message_data: String,
+    },
 }
-
 fn main() {
     let args: Cli = Cli::parse();
 
@@ -104,6 +112,27 @@ fn main() {
         }
         Commands::StartTally { election_id: _ } => {
             println!("Starting tally ...");
+        }
+        Commands::StoreMessage { message_data } => {
+            println!("Generating the transaction...");
+            println!("This may take a while");
+
+            //TO DO: Let the user make an account and use it, instead
+            //of creating it with a random one
+            let transaction =
+                transactions::create_store_data_transaction(message_data.as_bytes().to_vec(), true);
+
+            let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
+            println!("The transaction hexdata is: \n {}", encoded_data);
+            println!("Sending transactions to multiple nodes ...");
+            // To improve reliability we send the transaction to many nodes
+            let results = rcp::sync_spray_transaction(encoded_data);
+            println!("The nodes responses are: ");
+            for result in results {
+                println!("{}", result);
+            }
+            //TO DO: Add a command to check the block has been mined after a while
+            //And retry without generating the transaction later
         }
     }
 }
