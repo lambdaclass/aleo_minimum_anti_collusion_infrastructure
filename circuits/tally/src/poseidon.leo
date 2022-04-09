@@ -248,7 +248,6 @@ circuit Poseidon {
 
     function sbox(n_rounds_f: u32, n_rounds_p: u32, state: [field;3], i: u32) -> [field;3]{
         if i < n_rounds_f / 2 || i >= n_rounds_f / 2 + n_rounds_p {
-            console.log("Full round {}", i);
             for j in 0..3 {
                 state[j] = state[j]*state[j]*state[j]*state[j]*state[j];
             }
