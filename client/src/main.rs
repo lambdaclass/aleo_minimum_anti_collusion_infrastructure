@@ -1,4 +1,3 @@
-mod tally;
 mod transactions;
 // Note: this requires the `derive` feature
 use clap::{Parser, Subcommand};
