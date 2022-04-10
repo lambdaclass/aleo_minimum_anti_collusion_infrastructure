@@ -48,21 +48,3 @@ pub fn generate_input_file(votes: [u32; MAX_VOTES], vote_merkle_root: &str) {
 
     file.write_all(input_as_string.as_bytes()).unwrap();
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_generate_input() {
-        let votes: [u32; 32] = [
-            1, 2, 3, 2, 2, 3, 1, 2, 1, 2, 3, 2, 2, 3, 1, 2, 1, 2, 3, 2, 2, 3, 1, 2, 1, 2, 3, 2, 2,
-            3, 1, 2,
-        ];
-        generate_input_file(
-            votes,
-            "6081127065217055003429398673533374549058098389318475736416753929574343365699",
-        );
-        assert!(true);
-    }
-}
