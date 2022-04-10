@@ -1,0 +1,28 @@
+POST http://127.0.0.1:3000/election/
+Content-Type: application/json
+
+{
+    "sign_up_duratiosn": 10,
+    "voting_duration": 20
+}
+
+
+POST http://127.0.0.1:3000/election/sign_up
+Content-Type: application/json
+
+{
+    "election_id": "",
+    "public_key": ""
+}
+
+
+POST http://127.0.0.1:3000/election/msg
+Content-Type: application/json
+
+{
+    "public_key_old": "",
+    "public_key_new": "",
+    "vote_option": ""
+}
+
+

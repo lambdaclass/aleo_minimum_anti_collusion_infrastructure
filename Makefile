@@ -4,6 +4,9 @@ init:
 build:
 	cargo build
 
+run_server:
+	cargo run -p aleo-maci-server
+
 test:
 	cargo test
 
