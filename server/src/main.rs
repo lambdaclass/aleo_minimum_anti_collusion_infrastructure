@@ -1,6 +1,7 @@
 mod controllers;
 mod filters;
 mod models;
+mod services;
 
 use crate::filters::election_filters;
 
