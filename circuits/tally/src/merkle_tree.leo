@@ -7,9 +7,11 @@ function generate_root8(array: [field;8]) -> field{
         const log2_amount_leaves: u32 = 3;
         //Computes a merkle root, that we use as a commitment
         let padding = [0field;25];
-        //We need to 
-        //add some padding until the if inside the for gets fixed
-        //else, it gets an out of bounds error 
+        //We need to add some padding else, it gets an out of bounds error 
+        //Note this makes the calculation really slow, since all paths of branches
+        //are "executed" in the circuit
+        //TO DO: Generate a small precompiler for macros or a small program to 
+        //generate an optimized version of the loops
         let array_of_leaves = [...array, ...padding];
 
         for i in 0..log2_amount_leaves {
@@ -41,9 +43,11 @@ function generate_root8(array: [field;8]) -> field{
         // Padding = amount_of_leaves*(amount_of_leaves*0.5) - amount_of_leaves - 1 = 481
         // 32 * 16 -  32 - 1 = 481
         let padding = [0field;481];
-        //We need to 
-        //add some padding until the if inside the for gets fixed
-        //else, it gets an out of bounds error 
+        //We need to add some padding else, it gets an out of bounds error 
+        //Note this makes the calculation really slow, since all paths of branches
+        //are "executed" in the circuit
+        //TO DO: Generate a small precompiler for macros or a program to 
+        //generate an optimized version of the loops
         let array_of_leaves = [...array, ...padding];
 
         for i in 0..log2_amount_leaves {
@@ -96,9 +100,11 @@ circuit MerkleTreeForTest {
 
         //Computes a merkle root, that we use as a commitment
         let padding = [0field;25];
-        //We need to 
-        //add some padding until the if inside the for gets fixed
-        //else, it gets an out of bounds error 
+        //We need to add some padding else, it gets an out of bounds error 
+        //Note this makes the calculation really slow, since all paths of branches
+        //are "executed" in the circuit
+        //TO DO: Generate a small precompiler for macros or a program to 
+        //generate an optimized version of the loops
         let array_of_leaves = [...hashed_array, ...padding];
 
         for i in 0..log2_amount_leaves {
