@@ -13,7 +13,7 @@ function main(votes_as_u32: [u32; 32], votes_as_field: [field;32], votes_merkle_
     something public
     As an alternative,
     we can publish the input merkle tree and the program commitment since we have
-    two registers as output.circuit 
+    two registers as output.
     
     This should be updated in Leo 2.0
     */

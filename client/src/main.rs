@@ -1,3 +1,4 @@
+mod rcp;
 mod transactions;
 // Note: this requires the `derive` feature
 use clap::{Parser, Subcommand};
@@ -5,7 +6,7 @@ use ring::{
     rand,
     signature::{self, KeyPair},
 };
-use serde_json::{json, Value};
+
 use snarkvm::prelude::ToBytes;
 #[derive(Parser)]
 #[clap(name = "aleo-maci-cli")]
@@ -57,7 +58,7 @@ enum Commands {
         /// Election id
         election_id: String,
     },
-    /// Generates a key pair to use with other commands
+    /// [FOR TEST] stores data in the blockchain
     #[clap(arg_required_else_help = true)]
     StoreMessage {
         /// Up to 128 bytes of data as a string
@@ -120,30 +121,18 @@ fn main() {
             //of creating it with a random one
             let transaction =
                 transactions::create_store_data_transaction(message_data.as_bytes().to_vec(), true);
-            let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
-            //TO DO: Persist the encoded_data to retry the submission
-            println!("Your transaction hexdata is:\n {}", encoded_data);
-            println!("Submitting the transaction to the blockchain");
 
-            //TO DO: Move all this Request logic to a shared library
-            let request_json = json!({
-                "jsonrpc": "2.0",
-                "id": "1",
-                "method": "sendtransaction",
-                "params": [
-                    encoded_data
-                ]
-            });
-            let client = reqwest::blocking::Client::new();
-            //TO DO: Use our own Aleo node client, or pass it as an argument
-            let res = client
-                .post("http://188.166.7.13:3032/")
-                .json(&request_json)
-                .send()
-                .unwrap();
-            let response_json: Value = res.json().unwrap();
-            println!("The node response is: {}", response_json);
-            //TO DO: Have a retry logic
+            let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
+            println!("The transaction hexdata is: \n {}", encoded_data);
+            println!("Sending transactions to multiple nodes ...");
+            // To improve reliability we send the transaction to many nodes
+            let results = rcp::sync_spray_transaction(encoded_data);
+            println!("The nodes responses are: ");
+            for result in results {
+                println!("{}", result);
+            }
+            //TO DO: Add a command to check the block has been mined after a while
+            //And retry without generating the transaction later
         }
     }
 }
