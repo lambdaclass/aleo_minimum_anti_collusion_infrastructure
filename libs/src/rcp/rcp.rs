@@ -1,14 +1,14 @@
+use reqwest::blocking::Response;
 use serde_json::{json, Value};
 
 //These are nodes we have found that are usually up and answering quickly
-const NODES_URLS: [&str; 6] = [
+const NODES_URLS: [&str; 5] = [
     /*Operators */
     "http://8.210.117.127:3032",
     /*Miners */
     "http://116.202.115.195:3032",
     "http://138.201.224.221:3032",
     "http://206.189.97.241:3032",
-    "http://71.187.18.245:3032",
     /*Clients */
     "http://142.132.146.253:3032",
 ];
@@ -16,7 +16,6 @@ const NODES_URLS: [&str; 6] = [
 ///Sends the transactions synchronically to many known nodes
 ///and returns all the results in an array of jsons
 pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Value> {
-    //TO DO: Move to a shared library
     let request_json = json!({
         "jsonrpc": "2.0",
         "id": "1",
@@ -48,4 +47,28 @@ pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Value> {
     }
 
     return requests_results;
+}
+
+/// Gets transaction first public record
+//TO DO: Get all public records
+pub fn get_transaction_public_data(transaction_id: String) -> Result<String, reqwest::Error> {
+    let request_json = json!({
+        "jsonrpc": "2.0",
+        "id": "2",
+        "method": "gettransaction",
+        "params": [
+            transaction_id
+        ]
+    });
+
+    let client = reqwest::blocking::Client::new();
+    //TO DO: Check if node is alive before sending the request
+    let send_result = client.post(NODES_URLS[0]).json(&request_json).send()?;
+    let res_json_result: Result<Value, reqwest::Error> = send_result.json();
+    Ok(
+        res_json_result.unwrap()["result"]["decrypted_records"][0]["payload"]
+            .as_str()
+            .unwrap()
+            .to_string(),
+    )
 }
