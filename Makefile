@@ -1,3 +1,6 @@
+init:
+	cargo install leo-lang
+	
 build:
 	cargo build
 
@@ -15,4 +18,13 @@ build_images:
 
 format:
 	cargo fmt --all
+
+build_circuits:
+	cd circuits/tally;leo build
+
+run_circuits:
+	cd circuits/tally;leo run
+
+clean_circuits:
+	cd circuits/tally;leo clean
 
