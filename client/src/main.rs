@@ -1,12 +1,10 @@
-mod rcp;
-mod transactions;
 // Note: this requires the `derive` feature
+use aleo_maci_libs::{rcp, transactions};
 use clap::{Parser, Subcommand};
 use ring::{
     rand,
     signature::{self, KeyPair},
 };
-
 use snarkvm::prelude::ToBytes;
 #[derive(Parser)]
 #[clap(name = "aleo-maci-cli")]
