@@ -26,6 +26,7 @@ function main(votes_as_u32: [u32; 32], votes_as_field: [field;32], votes_merkle_
     console.log("Given root: {}", votes_merkle_root);
     console.log("Calculated merkle root: {}", calculated_root);
 
+    let result_root = 0field;
     //This should be enforced
     //Until we can do such, we return 0 on the commitment to mark it
     //as invalid
@@ -41,7 +42,10 @@ function main(votes_as_u32: [u32; 32], votes_as_field: [field;32], votes_merkle_
                 }
             }
         }
+
+        result_root = MerkleTree::generate_root8(vote_result);
     }
     
-    return (vote_result[0] != 0field) ? MerkleTree::generate_root8(vote_result) : 0field;
+    console.log("Vote result hash: {}", vote_result[0]);
+    return result_root;
 }
