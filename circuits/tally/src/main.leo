@@ -20,6 +20,7 @@ function main(votes_as_u32: [u32; 32], votes_as_field: [field;32], votes_merkle_
 
     let tally_result: u32 = 0;
     let vote_result: [field;8] = [0,0,0,0,0,0,0,0];
+    let result_root = 0field;
 
     console.log("Verifying merkle root");
     let calculated_root = MerkleTree::generate_root32(votes_as_field);
@@ -41,7 +42,9 @@ function main(votes_as_u32: [u32; 32], votes_as_field: [field;32], votes_merkle_
                 }
             }
         }
+        result_root = MerkleTree::generate_root8(vote_result);
     }
-    
-    return (vote_result[0] != 0field) ? MerkleTree::generate_root8(vote_result) : 0field;
+
+    console.log("Vote result hash: {}", result_root);
+    return result_root;
 }
