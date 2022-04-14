@@ -1,8 +1,8 @@
-use crate::models::Election;
+use crate::{models::Election, services::leo_io};
 use serde::Deserialize;
 use serde_json::json;
 use warp::reply::Json;
-
+use std::process::Command;
 #[derive(Debug, Deserialize)]
 pub struct ElectionCreate {
     sign_up_duration: i64,
@@ -21,6 +21,10 @@ pub struct ElectionMsg {
     vote_option: String,
 }
 
+pub struct StartTally{
+    tally_id: String
+}
+
 pub async fn create(data: ElectionCreate) -> Result<Json, warp::Rejection> {
     let election = Election::new(data.sign_up_duration, data.voting_duration);
 
@@ -32,5 +36,27 @@ pub async fn sign_up(data: ElectionSignUp) -> Result<Json, warp::Rejection> {
 }
 
 pub async fn receive_msg(data: ElectionMsg) -> Result<Json, warp::Rejection> {
+    Ok(warp::reply::json(&json!({"msg":"not implemented"})))
+}
+
+pub async fn start_tally()  -> Result<Json, warp::Rejection>{
+    //TO DO: Get the votes from the blockchain
+    let votes = [
+        1, 2, 3, 2, 2, 3, 1, 2, 
+        1, 2, 3, 2, 2, 3, 1, 2, 
+        1, 2, 3, 2, 2, 3, 1, 2, 
+        1, 2, 3, 2, 2, 3, 1, 2 
+    ];
+
+    //TO DO: Calculate the merkle root with the votes
+    let votes_merke_root = 
+        "6081127065217055003429398673533374549058098389318475736416753929574343365699";
+
+    leo_io::generate_input_file(votes, votes_merke_root);
+
+    //TO DO:
+    //RUN CIRCUIT
+    //COMPUTE TALLY
+    //VERIFY RESULTS
     Ok(warp::reply::json(&json!({"msg":"not implemented"})))
 }
