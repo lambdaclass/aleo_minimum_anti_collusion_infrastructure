@@ -4,8 +4,14 @@ init:
 build:
 	cargo build
 
+ops:
+	redis-server --daemonize yes
+
+stop:
+	redis-cli shutdown	
+
 run_server:
-	cargo run -p aleo-maci-server
+	cargo run -p aleo-maci-server	
 
 test:
 	cargo test
