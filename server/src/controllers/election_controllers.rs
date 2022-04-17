@@ -54,10 +54,10 @@ pub async fn start_tally() -> Result<Json, warp::Rejection> {
 
     //TO DO: Make async
     Command::new("sh")
-            .arg("-c")
-            .arg("make run_circuits")
-            .output()
-            .expect("failed to execute process");
+        .arg("-c")
+        .arg("make run_circuits")
+        .output()
+        .expect("failed to execute process");
 
     //TO DO:
     //RUN CIRCUIT
