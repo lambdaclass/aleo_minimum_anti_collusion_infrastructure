@@ -52,6 +52,13 @@ pub async fn start_tally() -> Result<Json, warp::Rejection> {
 
     leo_io::generate_input_file(votes, votes_merke_root);
 
+    //TO DO: Make async
+    Command::new("sh")
+            .arg("-c")
+            .arg("make run_circuits")
+            .output()
+            .expect("failed to execute process");
+
     //TO DO:
     //RUN CIRCUIT
     //COMPUTE TALLY
