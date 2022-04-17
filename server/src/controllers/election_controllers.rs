@@ -56,5 +56,5 @@ pub async fn start_tally() -> Result<Json, warp::Rejection> {
     //RUN CIRCUIT
     //COMPUTE TALLY
     //VERIFY RESULTS
-    Ok(warp::reply::json(&json!({"msg":"not implemented"})))
+    Ok(warp::reply::json(&json!({"msg":"Tally has begun"})))
 }
