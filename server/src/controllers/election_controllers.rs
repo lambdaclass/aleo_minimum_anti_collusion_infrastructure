@@ -52,7 +52,6 @@ pub async fn start_tally() -> Result<Json, warp::Rejection> {
 
     leo_io::generate_input_file(votes, votes_merke_root);
 
-    //TO DO: Make async
     Command::new("sh")
         .arg("-c")
         .arg("make run_circuits")
@@ -64,4 +63,24 @@ pub async fn start_tally() -> Result<Json, warp::Rejection> {
     //COMPUTE TALLY
     //VERIFY RESULTS
     Ok(warp::reply::json(&json!({"msg":"Tally has begun"})))
+}
+
+async fn async_run_circuits() {
+    Command::new("sh")
+        .arg("-c")
+        .arg("touch started")
+        .output()
+        .expect("failed to execute process");
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("make run_circuits")
+        .output()
+        .expect("failed to execute process");
+
+    Command::new("sh")
+        .arg("-c")
+        .arg("touch finished")
+        .output()
+        .expect("failed to execute process");
 }
