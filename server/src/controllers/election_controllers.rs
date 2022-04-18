@@ -45,6 +45,7 @@ pub async fn store_msg(
     pool: Pool<RedisConnectionManager>,
 ) -> Result<Json, warp::Rejection> {
     let mut con = pool.get().unwrap();
-    let _: () = con.set("msg", "hash").unwrap();
-    Ok(warp::reply::json(&json!({"msg":"not implemented"})))
+    let _: () = con.lpush("votes", "random_id").unwrap();
+
+    Ok(warp::reply::json(&json!({"msg":"vote stored"})))
 }
