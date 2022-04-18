@@ -1,5 +1,17 @@
 init:
 	cargo install leo-lang
+
+ops:
+	redis-server --daemonize yes
+
+ops_docker:
+	docker-compose up -d redis
+
+stop:
+	redis-cli shutdown
+
+stop_docker:
+	docker-compose down redis	
 	
 build:
 	cargo build

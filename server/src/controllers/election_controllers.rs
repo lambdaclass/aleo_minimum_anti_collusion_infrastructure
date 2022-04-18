@@ -1,4 +1,7 @@
 use crate::models::Election;
+use crate::r2d2::Pool;
+use crate::RedisConnectionManager;
+use r2d2_redis::redis::Commands;
 use serde::Deserialize;
 use serde_json::json;
 use warp::reply::Json;
@@ -21,16 +24,27 @@ pub struct ElectionMsg {
     vote_option: String,
 }
 
-pub async fn create(data: ElectionCreate) -> Result<Json, warp::Rejection> {
+pub async fn create(
+    data: ElectionCreate,
+    pool: Pool<RedisConnectionManager>,
+) -> Result<Json, warp::Rejection> {
     let election = Election::new(data.sign_up_duration, data.voting_duration);
 
     Ok(warp::reply::json(&election))
 }
 
-pub async fn sign_up(data: ElectionSignUp) -> Result<Json, warp::Rejection> {
+pub async fn sign_up(
+    data: ElectionSignUp,
+    pool: Pool<RedisConnectionManager>,
+) -> Result<Json, warp::Rejection> {
     Ok(warp::reply::json(&json!({"msg":"not implemented"})))
 }
 
-pub async fn receive_msg(data: ElectionMsg) -> Result<Json, warp::Rejection> {
+pub async fn store_msg(
+    data: ElectionMsg,
+    pool: Pool<RedisConnectionManager>,
+) -> Result<Json, warp::Rejection> {
+    let mut con = pool.get().unwrap();
+    let _: () = con.set("msg", "hash").unwrap();
     Ok(warp::reply::json(&json!({"msg":"not implemented"})))
 }
