@@ -11,7 +11,6 @@ in
 mkShell {
   buildInputs = [
     git
-    rustup
     nixpkgs.rust-bin.stable.latest.default
     redis
   ]
