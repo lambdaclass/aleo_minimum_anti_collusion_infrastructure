@@ -20,9 +20,7 @@ POST http://127.0.0.1:3000/election/msg
 Content-Type: application/json
 
 {
-    "public_key_old": "",
-    "public_key_new": "",
-    "vote_option": ""
+    "aleo_transaction_id": "1"
 }
 
 

@@ -19,9 +19,7 @@ pub struct ElectionSignUp {
 
 #[derive(Debug, Deserialize)]
 pub struct ElectionMsg {
-    public_key_old: String,
-    public_key_new: String,
-    vote_option: String,
+    aleo_transaction_id: String,
 }
 
 pub async fn create(
@@ -45,6 +43,9 @@ pub async fn store_msg(
     pool: Pool<RedisConnectionManager>,
 ) -> Result<Json, warp::Rejection> {
     let mut con = pool.get().unwrap();
-    let _: () = con.set("msg", "hash").unwrap();
-    Ok(warp::reply::json(&json!({"msg":"not implemented"})))
+    let _: () = con.lpush("votes", &data.aleo_transaction_id).unwrap();
+
+    Ok(warp::reply::json(
+        &json!({"msg":"your vote was succesuffly stored"}),
+    ))
 }
