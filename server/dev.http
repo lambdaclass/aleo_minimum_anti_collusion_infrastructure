@@ -20,7 +20,7 @@ POST http://127.0.0.1:3000/election/msg
 Content-Type: application/json
 
 {
-    "aleo_transaction_id": "asdasdas"
+    "aleo_transaction_id": "1"
 }
 
 
