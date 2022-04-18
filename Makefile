@@ -4,8 +4,14 @@ init:
 ops:
 	redis-server --daemonize yes
 
+ops_docker:
+	docker-compose up -d redis
+
 stop:
-	redis-cli shutdown	
+	redis-cli shutdown
+
+stop_docker:
+	docker-compose down redis	
 	
 build:
 	cargo build
