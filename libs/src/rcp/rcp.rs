@@ -15,7 +15,7 @@ const NODES_URLS: [&str; 5] = [
 
 ///Sends the transactions synchronically to many known nodes
 ///and returns all the results in an array of jsons
-pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Value> {
+pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Result<Value, reqwest::Error>> {
     let request_json = json!({
         "jsonrpc": "2.0",
         "id": "1",
@@ -31,19 +31,11 @@ pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Value> {
     let mut requests_results = vec![];
     for node in NODES_URLS {
         let send_result = client.post(node).json(&request_json).send();
-
-        match send_result {
-            Ok(send_result) => {
-                let res_json_result: Result<Value, reqwest::Error> = send_result.json();
-                requests_results.push(match res_json_result {
-                    Ok(res) => res,
-                    Err(error) => json!({"error":error.to_string()}),
-                });
-            }
-            Err(e) => {
-                requests_results.push(json!({"error":e.to_string()}));
-            }
+        let v = match send_result {
+            Ok(send_result) => send_result.json(),
+            Err(e) => Err(e),
         };
+        requests_results.push(v);
     }
 
     return requests_results;

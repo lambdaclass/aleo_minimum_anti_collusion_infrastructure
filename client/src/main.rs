@@ -119,18 +119,42 @@ fn main() {
 
             //TO DO: Let the user make an account and use it, instead
             //of creating it with a random one
+
             let transaction =
                 transactions::create_store_data_transaction(message_data.as_bytes().to_vec(), true);
-
             let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
-
             println!("The transaction hexdata is: \n {}", encoded_data);
             println!("Sending transactions to multiple nodes ...");
             // To improve reliability we send the transaction to many nodes
             let responses = rcp::sync_spray_transaction(encoded_data);
-            println!("The nodes responses are: ");
 
-            let transaction_id = responses[0].get("result").unwrap();
+            let mut iter = responses.iter();
+            let mut ok_response: Value = json!("");
+            let mut amount_of_bad_results = 0;
+            for response in responses.iter() {
+                match response {
+                    Ok(value) => {
+                        ok_response = value.clone();
+                        break;
+                    }
+                    Err(_) => {
+                        amount_of_bad_results = amount_of_bad_results + 1;
+                    }
+                }
+            }
+
+            if responses.len() == amount_of_bad_results {
+                println!("Aleo nodes can't be reached, try again later");
+                return;
+            }
+
+            println!("Nodes received the transaction succesfully");
+
+            let transaction_id = ok_response.get("result").unwrap();
+
+            println!("The transaction id is: {}", transaction_id);
+
+            println!("Notifying the transaction submission to the tallying server ...");
 
             let request_json = json!({ "aleo_transaction_id": transaction_id });
 
@@ -139,10 +163,15 @@ fn main() {
                 .post("http://127.0.0.1:3000/election/msg")
                 .json(&request_json)
                 .send();
-            println!("Result: {:?}", send_result);
-            for response in responses {
-                println!("{}", response);
+
+            match send_result {
+                Ok(v) => {}
+                Err(_) => {
+                    println!("Election server can't be reached, try again later")
+                }
             }
+            println!("Vote process finished successfully");
+
             //TO DO: Add a command to check the block has been mined after a while
             //And retry without generating the transaction later
         }
