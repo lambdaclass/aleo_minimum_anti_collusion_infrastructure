@@ -1,10 +1,12 @@
 // Note: this requires the `derive` feature
 use aleo_maci_libs::{rcp, transactions};
 use clap::{Parser, Subcommand};
+use reqwest::blocking::Response;
 use ring::{
     rand,
     signature::{self, KeyPair},
 };
+use serde_json::{json, Value};
 use snarkvm::prelude::ToBytes;
 #[derive(Parser)]
 #[clap(name = "aleo-maci-cli")]
@@ -58,8 +60,8 @@ enum Commands {
     },
     /// [FOR TEST] stores data in the blockchain
     #[clap(arg_required_else_help = true)]
-    StoreMessage {
-        /// Up to 128 bytes of data as a string
+    VoteFor {
+        /// Vote for the given option, must be a number between 1 and the max amount of options
         message_data: String,
     },
 }
@@ -111,7 +113,7 @@ fn main() {
         Commands::StartTally { election_id: _ } => {
             println!("Starting tally ...");
         }
-        Commands::StoreMessage { message_data } => {
+        Commands::VoteFor { message_data } => {
             println!("Generating the transaction...");
             println!("This may take a while");
 
@@ -121,13 +123,25 @@ fn main() {
                 transactions::create_store_data_transaction(message_data.as_bytes().to_vec(), true);
 
             let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
+
             println!("The transaction hexdata is: \n {}", encoded_data);
             println!("Sending transactions to multiple nodes ...");
             // To improve reliability we send the transaction to many nodes
-            let results = rcp::sync_spray_transaction(encoded_data);
+            let responses = rcp::sync_spray_transaction(encoded_data);
             println!("The nodes responses are: ");
-            for result in results {
-                println!("{}", result);
+
+            let transaction_id = responses[0].get("result").unwrap();
+
+            let request_json = json!({ "aleo_transaction_id": transaction_id });
+
+            let client = reqwest::blocking::Client::new();
+            let send_result = client
+                .post("http://127.0.0.1:3000/election/msg")
+                .json(&request_json)
+                .send();
+            println!("Result: {:?}", send_result);
+            for response in responses {
+                println!("{}", response);
             }
             //TO DO: Add a command to check the block has been mined after a while
             //And retry without generating the transaction later
