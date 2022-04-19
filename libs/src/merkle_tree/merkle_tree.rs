@@ -12,15 +12,19 @@ pub fn hash(v1: Fr, v2: Fr) -> Fr {
 
 pub fn generate_merkle_root(leaves: Vec<Fr>) -> Fr {
     let mut leaves = leaves.clone();
+    let tree_height = ((leaves.len() as f32).log2().round()) as usize;
+    println!("Log2 amount of leaves: {}", tree_height);
 
-    for i in 0..(((leaves.len() as f32).round()) as usize) {
+    for i in 0..(((leaves.len() as f32).log2().round()) as usize) {
         //For max_options
         for j in 0..leaves.len() {
-            let step = 2 ^ (i);
+            let step = 2 << i;
+            println!("Step: {}", step);
             // This is the modulus
             let should_skip = j - (j / 2) * 2;
             if (((j + 1) * step) < 8) && (should_skip == 0) {
                 leaves[j * step] = hash(leaves[j * step], leaves[(j + 1) * step]);
+                println!("Hash of height {} at {}: {}", i, j * step, leaves[j * step]);
             }
         }
     }
