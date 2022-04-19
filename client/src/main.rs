@@ -165,12 +165,13 @@ fn main() {
                 .send();
 
             match send_result {
-                Ok(v) => {}
+                Ok(v) => {
+                    println!("Vote process finished successfully")
+                }
                 Err(_) => {
                     println!("Election server can't be reached, try again later")
                 }
             }
-            println!("Vote process finished successfully");
 
             //TO DO: Add a command to check the block has been mined after a while
             //And retry without generating the transaction later
