@@ -13,18 +13,16 @@ pub fn hash(v1: Fr, v2: Fr) -> Fr {
 pub fn generate_merkle_root(leaves: Vec<Fr>) -> Fr {
     let mut leaves = leaves.clone();
     let tree_height = ((leaves.len() as f32).log2().round()) as usize;
-    println!("Log2 amount of leaves: {}", tree_height);
 
     for i in 0..(((leaves.len() as f32).log2().round()) as usize) {
         //For max_options
         for j in 0..leaves.len() {
-            let step = 2 << i;
-            println!("Step: {}", step);
+            let step = if i == 0 { 1 } else { 2 << (i - 1) };
             // This is the modulus
             let should_skip = j - (j / 2) * 2;
-            if (((j + 1) * step) < 8) && (should_skip == 0) {
+
+            if (((j + 1) * step) < leaves.len()) && (should_skip == 0) {
                 leaves[j * step] = hash(leaves[j * step], leaves[(j + 1) * step]);
-                println!("Hash of height {} at {}: {}", i, j * step, leaves[j * step]);
             }
         }
     }
@@ -38,7 +36,7 @@ mod tests {
     fn hash_1_2() {
         assert_eq!(
             hash(Fr::from_str("1").unwrap(), Fr::from_str("2").unwrap()).to_string(),
-            "Fr(0x0ee79c570dd490a23b9d19037e0b20c5390b1cae9a6fd1c421233ca41408d396)"
+            "Fr(0x9811D68B946C0FC88B0B7FECCC1C35B792A732B3E072CA864DF3AEE94826684)"
         );
     }
 
@@ -55,7 +53,7 @@ mod tests {
 
         assert_eq!(
             generate_merkle_root(votes.to_vec()).to_string(),
-            "Fr(0x0ee79c570dd490a23b9d19037e0b20c5390b1cae9a6fd1c421233ca41408d396)"
+            "Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443)"
         );
     }
 }
