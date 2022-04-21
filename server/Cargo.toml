@@ -17,6 +17,8 @@ uuid = { version = "0.8", features = ["serde", "v4"] }
 pretty_env_logger = "0.4"
 poseidon-rs = { git = "https://github.com/hexLancel/poseidon-rs-bls-12-377" }
 ff = {package="ff_ce" , version="0.11", features = ["derive"]}
+hex = "0.4"
+num = "0.1.36"
 
 [dependencies.aleo-maci-libs]
 path = "../libs"

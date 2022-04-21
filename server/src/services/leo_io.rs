@@ -5,6 +5,7 @@ use std::str;
 const MAX_VOTES: usize = 32;
 const TALLY_IN_FILE_PATH: &str = "./circuits/tally/inputs/tally.in";
 const TALLY_OUT_FILE_PATH: &str = "./../circuits/tally/outputs/tally.out";
+use num::{BigUint, Num};
 
 pub fn generate_input_file(votes: [u32; MAX_VOTES], vote_merkle_root: &str) {
     /*
@@ -56,11 +57,32 @@ pub fn read_output_file() {
     println!("Contents: {}", contents);
 }
 
-#[cfg(test)]
+///Converts a string with Fr format to a decimal string for Leo
+///Ex: Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443) ->
+/// 6081127065217055003429398673533374549058098389318475736416753929574343365699
+
+pub fn fr_string_to_leo_str(fr: String) -> String {
+    let sliced_string = fr[5..(fr.len() - 1)].to_string();
+    let sliced_str: &str = sliced_string.as_str();
+    BigUint::from_str_radix(sliced_str, 16).unwrap().to_string()
+}
+
 mod tests {
     use super::*;
     #[test]
     fn test_read_file() {
         read_output_file();
+    }
+
+    #[test]
+    fn test_fr_leo() {
+        let fr_str =
+            "Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443)".to_string();
+        let str = fr_string_to_leo_str(fr_str);
+        assert_eq!(
+            str,
+            "6081127065217055003429398673533374549058098389318475736416753929574343365699"
+                .to_string()
+        );
     }
 }
