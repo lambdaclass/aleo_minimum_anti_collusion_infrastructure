@@ -1,6 +1,6 @@
-use crate::{models::Election, services::leo_io};
 use crate::r2d2::Pool;
 use crate::RedisConnectionManager;
+use crate::{models::Election, services::leo_io};
 use r2d2_redis::redis::Commands;
 use serde::Deserialize;
 use serde_json::json;
