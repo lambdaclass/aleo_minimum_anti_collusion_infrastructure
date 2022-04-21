@@ -1,6 +1,11 @@
 use crate::r2d2::Pool;
+use crate::services::leo_io::generate_input_file;
 use crate::RedisConnectionManager;
 use crate::{models::Election, services::leo_io};
+use aleo_maci_libs::merkle_tree::generate_merkle_root;
+use ff::PrimeField;
+use poseidon_rs::Fr;
+
 use r2d2_redis::redis::Commands;
 use serde::Deserialize;
 use serde_json::json;
@@ -61,10 +66,17 @@ pub async fn start_tally() -> Result<Json, warp::Rejection> {
     ];
 
     //TO DO: Calculate the merkle root with the votes
-    let votes_merke_root =
-        "6081127065217055003429398673533374549058098389318475736416753929574343365699";
+    let votes_merke_root = generate_merkle_root(
+        votes
+            .map(|v| Fr::from_str(&v.to_string()).unwrap())
+            .to_vec(),
+    )
+    .to_string();
 
-    leo_io::generate_input_file(votes, votes_merke_root);
+    //This has the format Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443)
+    //TO DO: Remove FR(..), convert hex to dec
+
+    leo_io::generate_input_file(votes, votes_merke_root.as_str());
 
     //TO DO: Make async, don't run if it's already running or has run before
     Command::new("sh")
