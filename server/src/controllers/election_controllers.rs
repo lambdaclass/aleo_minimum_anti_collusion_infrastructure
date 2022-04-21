@@ -66,17 +66,16 @@ pub async fn start_tally() -> Result<Json, warp::Rejection> {
     ];
 
     //TO DO: Calculate the merkle root with the votes
-    let votes_merke_root = generate_merkle_root(
+    let votes_merkle_root_fr_str = generate_merkle_root(
         votes
             .map(|v| Fr::from_str(&v.to_string()).unwrap())
             .to_vec(),
     )
     .to_string();
 
-    //This has the format Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443)
-    //TO DO: Remove FR(..), convert hex to dec
+    let votes_merkle_root_leo_str = leo_io::fr_string_to_leo_str(votes_merkle_root_fr_str);
 
-    leo_io::generate_input_file(votes, votes_merke_root.as_str());
+    leo_io::generate_input_file(votes, votes_merkle_root_leo_str.as_str());
 
     //TO DO: Make async, don't run if it's already running or has run before
     Command::new("sh")
