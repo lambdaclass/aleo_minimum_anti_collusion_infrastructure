@@ -12,6 +12,7 @@ mkShell {
   buildInputs = [
     git
     nixpkgs.rust-bin.stable.latest.default
+    redis
   ]
   ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
     # For file_system on macOS. 
