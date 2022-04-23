@@ -17,7 +17,8 @@ async fn main() {
         _ => [127, 0, 0, 1],
     };
 
-    println!("REDSI_URL {}", redis_url);
+    println!("HOST {}", redis_url);
+    println!("REDIS_URL {}", redis_url);
 
     let manager = RedisConnectionManager::new(redis_url).unwrap();
     let pool = r2d2::Pool::builder().build(manager).unwrap();
