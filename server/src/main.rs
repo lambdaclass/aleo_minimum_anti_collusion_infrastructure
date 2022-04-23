@@ -4,11 +4,22 @@ mod services;
 
 use crate::controllers::election_controllers;
 use r2d2_redis::{r2d2, RedisConnectionManager};
+use std::env;
 use warp::Filter;
 
-#[tokio::main] // 2.
+#[tokio::main]
 async fn main() {
-    let manager = RedisConnectionManager::new("redis://127.0.0.1:6379").unwrap();
+    let host = env::var("HOST").expect("$HOST not setted");
+    let redis_url = env::var("REDIS_URL").expect("$REDIS_URL not setted");
+
+    let host_for_warp = match host.as_str() {
+        "docker" => [0, 0, 0, 0],
+        _ => [127, 0, 0, 1],
+    };
+
+    println!("REDSI_URL {}", redis_url);
+
+    let manager = RedisConnectionManager::new(redis_url).unwrap();
     let pool = r2d2::Pool::builder().build(manager).unwrap();
 
     let warp_pool = warp::any().map(move || pool.clone());
@@ -41,6 +52,6 @@ async fn main() {
     let filters = create.or(sign_up).or(msg);
 
     warp::serve(filters) // 5.
-        .run(([127, 0, 0, 1], 3000)) // 6.
+        .run((host_for_warp, 3000)) // 6.
         .await;
 }
