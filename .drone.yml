@@ -1,0 +1,46 @@
+###### TEST RELEASE #####
+
+kind: pipeline
+type: kubernetes
+name: release
+
+trigger:
+  branch:
+  - main
+  event:
+  - push  
+
+steps:
+- name: build
+  image: plugins/docker
+  environment:
+    PLUGIN_MTU: 1440
+    REDIS_URL: redis://db-service:6379
+    HOST: docker
+  settings:
+    username: admin
+    password:
+      from_secret: REGISTRY_PASS
+    dockerfile: server/Dockerfile
+    registry: registry.writeonly.io
+    repo: registry.writeonly.io/aleo-maci-server
+    tags: latest
+    build_args_from_env:
+      - REDIS_URL
+      - HOST
+
+- name: deploy
+  image: alpine:latest
+  environment:
+    KUBE_URL: https://192.168.100.1:6443
+    KUBE_TOKEN:
+      from_secret: KUBE_TOKEN_ALEO_MACI
+  commands:
+    - apk add kubectl --no-cache --repository http://dl-3.alpinelinux.org/alpine/edge/testing/
+    - >
+      kubectl
+      --server=$KUBE_URL
+      --token=$KUBE_TOKEN
+      --insecure-skip-tls-verify=true
+      -n aleo-maci
+      rollout restart deployment/server
