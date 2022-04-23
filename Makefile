@@ -17,7 +17,7 @@ build:
 	cargo build
 
 run_server:
-	cargo run -p aleo-maci-server
+	HOST="localhost" REDIS_URL="redis://127.0.0.1:6379" cargo run -p aleo-maci-server
 
 test:
 	cargo test
