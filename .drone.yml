@@ -22,8 +22,8 @@ steps:
     password:
       from_secret: REGISTRY_PASS
     dockerfile: server/Dockerfile
-    registry: registry.turismo.ciduba.net
-    repo: registry.turismo.ciduba.net/aleo-maci-server
+    registry: registry.writeonly.io
+    repo: registry.writeonly.io/aleo-maci-server
     tags: latest
     build_args_from_env:
       - REDIS_URL
