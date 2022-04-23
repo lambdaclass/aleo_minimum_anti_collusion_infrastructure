@@ -20,7 +20,7 @@ steps:
   settings:
     username: admin
     password:
-      from_secret: REGISTRY_PASSx
+      from_secret: REGISTRY_PASS
     dockerfile: server/Dockerfile
     registry: registry.turismo.ciduba.net
     repo: registry.turismo.ciduba.net/aleo-maci-server
