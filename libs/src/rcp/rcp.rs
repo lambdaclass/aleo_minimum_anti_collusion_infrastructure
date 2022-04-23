@@ -32,7 +32,13 @@ pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Result<Value,
     for node in NODES_URLS {
         let send_result = client.post(node).json(&request_json).send();
         let v = match send_result {
-            Ok(send_result) => send_result.json(),
+            Ok(send_result) => {
+                let with_status_error = send_result.error_for_status();
+                match with_status_error {
+                    Ok(msg) => msg.json(),
+                    Err(e) => Err(e),
+                }
+            }
             Err(e) => Err(e),
         };
         requests_results.push(v);
