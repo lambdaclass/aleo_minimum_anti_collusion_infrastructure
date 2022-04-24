@@ -50,7 +50,14 @@ async fn main() {
         .and(warp_pool.clone())
         .and_then(election_controllers::store_msg);
 
-    let filters = create.or(sign_up).or(msg);
+    let start_tally = election_base
+        .and(warp::post())
+        .and(warp::path("start_tally"))
+        .and(warp::path::end())
+        .and(warp_pool.clone())
+        .and_then(election_controllers::start_tally);
+
+    let filters = create.or(sign_up).or(msg).or(start_tally);
 
     warp::serve(filters) // 5.
         .run((host_for_warp, 3000)) // 6.

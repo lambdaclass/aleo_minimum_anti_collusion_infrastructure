@@ -26,7 +26,6 @@ pub fn generate_merkle_root(leaves: Vec<Fr>) -> Fr {
             }
         }
     }
-
     leaves[0]
 }
 #[cfg(test)]
