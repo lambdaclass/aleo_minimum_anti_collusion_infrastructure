@@ -84,6 +84,8 @@ pub fn public_data_to_vote(data: String) -> String {
     let sliced_str: &str = sliced_string.as_str();
     let u32_vote = u32::from_str_radix(sliced_str, 16).unwrap();
     u32_vote.to_string()
+}
+
 pub async fn get_transactions_public_data(
     transactions_id: Vec<String>,
 ) -> Result<Vec<String>, reqwest::Error> {
