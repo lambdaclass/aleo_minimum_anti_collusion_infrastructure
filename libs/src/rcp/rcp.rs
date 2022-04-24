@@ -1,3 +1,4 @@
+use futures::future::join_all;
 use serde_json::{json, Value};
 
 //These are nodes we have found that are usually up and answering quickly
@@ -83,4 +84,49 @@ pub fn public_data_to_vote(data: String) -> String {
     let sliced_str: &str = sliced_string.as_str();
     let u32_vote = u32::from_str_radix(sliced_str, 16).unwrap();
     u32_vote.to_string()
+pub async fn get_transactions_public_data(
+    transactions_id: Vec<String>,
+) -> Result<Vec<String>, reqwest::Error> {
+    let client = reqwest::Client::new();
+
+    let transactions_futures = transactions_id.iter().map(|transaction_id| {
+        let client = &client;
+
+        let request_json = json!({
+            "jsonrpc": "2.0",
+            "id": "2",
+            "method": "gettransaction",
+            "params": [
+                transaction_id
+            ]
+        });
+
+        async move {
+            let resp = client
+                .post(NODES_URLS[0])
+                .json(&request_json)
+                .send()
+                .await
+                .unwrap();
+
+            let resp_json: Result<Value, reqwest::Error> = resp.json().await;
+
+            resp_json
+        }
+    });
+
+    let transactions_results = join_all(transactions_futures).await;
+
+    let votes: Vec<String> = transactions_results
+        .into_iter()
+        .map(|result| {
+            let res_json = result.unwrap();
+            res_json["result"]["decrypted_records"][0]["payload"]
+                .as_str()
+                .unwrap()
+                .to_string()
+        })
+        .collect();
+
+    Ok(votes)
 }
