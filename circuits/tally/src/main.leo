@@ -36,7 +36,7 @@ function main(votes_as_u32: [u32; 32], votes_as_field: [field;32], votes_merkle_
         for i in 0..32 {
             //For each category
             //Add the vote to the field with the results
-            for j in 0..8{
+            for j in 1..9{
                 if (votes_as_u32[i] == j){
                     vote_result[j] = vote_result[j] + 1;
                 }
