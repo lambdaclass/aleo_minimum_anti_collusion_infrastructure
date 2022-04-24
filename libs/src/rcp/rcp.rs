@@ -1,4 +1,3 @@
-use reqwest::blocking::Response;
 use serde_json::{json, Value};
 
 //These are nodes we have found that are usually up and answering quickly
@@ -49,7 +48,7 @@ pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Result<Value,
 
 /// Gets transaction first public record
 //TO DO: Get all public records
-pub fn get_transaction_public_data(transaction_id: String) -> Result<String, reqwest::Error> {
+pub async fn get_transaction_public_data(transaction_id: String) -> Result<String, reqwest::Error> {
     let request_json = json!({
         "jsonrpc": "2.0",
         "id": "2",
@@ -59,10 +58,16 @@ pub fn get_transaction_public_data(transaction_id: String) -> Result<String, req
         ]
     });
 
-    let client = reqwest::blocking::Client::new();
+    let client = reqwest::Client::new();
     //TO DO: Check if node is alive before sending the request
-    let send_result = client.post(NODES_URLS[0]).json(&request_json).send()?;
-    let res_json_result: Result<Value, reqwest::Error> = send_result.json();
+    let send_result = client
+        .post(NODES_URLS[0])
+        .json(&request_json)
+        .send()
+        .await
+        .unwrap();
+
+    let res_json_result: Result<Value, reqwest::Error> = send_result.json().await;
     Ok(
         res_json_result.unwrap()["result"]["decrypted_records"][0]["payload"]
             .as_str()

@@ -91,13 +91,14 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
     );
 
     // Get votes from the Aleo Ledger
-    let votes: Vec<String> = votes_ids_from_pool
-        .iter()
-        .map(|x| {
-            get_transaction_public_data(x.to_string()).expect("A vote was not found in the ledger")
-        })
-        .collect();
 
+    let mut votes: Vec<String> = Vec::new();
+    for v in votes_ids_from_pool {
+        let vote = get_transaction_public_data(v.to_string());
+        votes.push(vote.await.unwrap());
+    }
+
+    println!("1");
     // Generate markle root of the votes for the circuit input
     let votes_merkle_root_fr_str = generate_merkle_root(
         votes
@@ -106,6 +107,8 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
             .collect(),
     )
     .to_string();
+
+    println!("2");
 
     let votes_merkle_root_leo_str = leo_io::fr_string_to_leo_str(votes_merkle_root_fr_str);
 
@@ -122,6 +125,8 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
             None => 0,
         };
     }
+
+    println!("3");
 
     // Generate circuit input file
     generate_input_file(votes_fixed, votes_merkle_root_leo_str.as_str());
