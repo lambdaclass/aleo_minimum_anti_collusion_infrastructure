@@ -2,7 +2,9 @@ use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
 use crate::RedisConnectionManager;
 use crate::{models::Election, services::leo_io};
-use aleo_maci_libs::{merkle_tree::generate_merkle_root, rcp::get_transaction_public_data};
+use aleo_maci_libs::{
+    merkle_tree::generate_merkle_root, rcp::get_transaction_public_data, rcp::public_data_to_vote,
+};
 use ff::PrimeField;
 use poseidon_rs::Fr;
 
@@ -10,7 +12,6 @@ use r2d2_redis::redis::Commands;
 use serde::Deserialize;
 use serde_json::json;
 use std::process::Command;
-use warp::reject::Reject;
 use warp::reply::Json;
 
 #[derive(Debug, Deserialize)]
@@ -94,11 +95,12 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
 
     let mut votes: Vec<String> = Vec::new();
     for v in votes_ids_from_pool {
-        let vote = get_transaction_public_data(v.to_string());
-        votes.push(vote.await.unwrap());
+        let public_data = get_transaction_public_data(v.to_string()).await;
+        let vote = public_data_to_vote(public_data.unwrap());
+        votes.push(vote);
     }
 
-    println!("1");
+    println!("Votes: {:?} ", votes);
     // Generate markle root of the votes for the circuit input
     let votes_merkle_root_fr_str = generate_merkle_root(
         votes
@@ -107,8 +109,6 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
             .collect(),
     )
     .to_string();
-
-    println!("2");
 
     let votes_merkle_root_leo_str = leo_io::fr_string_to_leo_str(votes_merkle_root_fr_str);
 
@@ -125,8 +125,6 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
             None => 0,
         };
     }
-
-    println!("3");
 
     // Generate circuit input file
     generate_input_file(votes_fixed, votes_merkle_root_leo_str.as_str());

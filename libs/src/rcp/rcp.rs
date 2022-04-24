@@ -75,3 +75,12 @@ pub async fn get_transaction_public_data(transaction_id: String) -> Result<Strin
             .to_string(),
     )
 }
+
+///Converts the public data string of a record to a vote string
+pub fn public_data_to_vote(data: String) -> String {
+    //We use the first 2 elements of the string to represent the number
+    let sliced_string = data[0..2].to_string();
+    let sliced_str: &str = sliced_string.as_str();
+    let u32_vote = u32::from_str_radix(sliced_str, 16).unwrap();
+    u32_vote.to_string()
+}

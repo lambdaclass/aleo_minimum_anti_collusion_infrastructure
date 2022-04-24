@@ -62,7 +62,7 @@ enum Commands {
     #[clap(arg_required_else_help = true)]
     VoteFor {
         /// Vote for the given option, must be a number between 1 and the max amount of options
-        message_data: String,
+        message_data: u8,
     },
 }
 fn main() {
@@ -119,16 +119,16 @@ fn main() {
 
             //TO DO: Let the user make an account and use it, instead
             //of creating it with a random one
-
+            let mut transaction_payload: Vec<u8> = Vec::new();
+            transaction_payload.push(*message_data);
             let transaction =
-                transactions::create_store_data_transaction(message_data.as_bytes().to_vec(), true);
+                transactions::create_store_data_transaction(transaction_payload, true);
             let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
             println!("The transaction hexdata is: \n {}", encoded_data);
             println!("Sending transactions to multiple nodes ...");
             // To improve reliability we send the transaction to many nodes
             let responses = rcp::sync_spray_transaction(encoded_data);
 
-            let mut iter = responses.iter();
             let mut ok_response: Value = json!("");
             let mut amount_of_bad_results = 0;
             for response in responses.iter() {
