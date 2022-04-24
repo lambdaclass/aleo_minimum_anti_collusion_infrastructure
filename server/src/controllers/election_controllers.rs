@@ -10,6 +10,7 @@ use r2d2_redis::redis::Commands;
 use serde::Deserialize;
 use serde_json::json;
 use std::process::Command;
+use warp::reject::Reject;
 use warp::reply::Json;
 #[derive(Debug, Deserialize)]
 pub struct ElectionCreate {
@@ -50,7 +51,12 @@ pub async fn store_msg(
     data: ElectionMsg,
     pool: Pool<RedisConnectionManager>,
 ) -> Result<Json, warp::Rejection> {
-    let mut con = pool.get().unwrap();
+    //TO DO: Don't store repeated values
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
     let _: () = con.lpush("votes", &data.aleo_transaction_id).unwrap();
 
     Ok(warp::reply::json(
@@ -58,12 +64,31 @@ pub async fn store_msg(
     ))
 }
 
-pub async fn start_tally() -> Result<Json, warp::Rejection> {
+#[derive(Debug)]
+struct DBError;
+
+impl warp::reject::Reject for DBError {}
+
+pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, warp::Rejection> {
     //TO DO: Get the votes from the blockchain
     let votes = [
         1, 2, 3, 2, 2, 3, 1, 2, 1, 2, 3, 2, 2, 3, 1, 2, 1, 2, 3, 2, 2, 3, 1, 2, 1, 2, 3, 2, 2, 3,
         1, 2,
     ];
+
+    const MAX_AMOUNT_OF_VOTES: isize = 32;
+
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    let votes_from_pool: Vec<String> = match con.lrange("votes", 0, MAX_AMOUNT_OF_VOTES - 1) {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    println!("Votes from pool : {:?}", votes_from_pool);
 
     //TO DO: Calculate the merkle root with the votes
     let votes_merkle_root_fr_str = generate_merkle_root(
