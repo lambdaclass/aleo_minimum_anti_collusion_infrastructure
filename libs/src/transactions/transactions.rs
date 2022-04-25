@@ -80,7 +80,6 @@ mod tests {
 
     #[test]
     ///Creates a transaction and submits it to a local ledger
-    /// This test lasts about 25 min
     fn local_transaction_test() {
         println!("Creating ledger ...");
         let mut ledger = Ledger::<Testnet2>::new().unwrap();
@@ -164,11 +163,6 @@ mod tests {
         println!("Decrypted record 1: {}", decrypted_records.next().unwrap());
     }
 
-    #[test]
-    fn asd() {
-        let string_data = "57726974654F6E6C794C616273";
-        println!("Str data: {:?}", string_data.as_bytes().to_vec());
-    }
     #[test]
     fn local_transaction_with_public_data_test() {
         //This test lasts 25 min approx
