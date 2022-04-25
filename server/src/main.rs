@@ -1,6 +1,7 @@
 mod controllers;
 mod models;
 mod services;
+mod utils;
 
 use crate::controllers::election_controllers;
 use r2d2_redis::{r2d2, RedisConnectionManager};
