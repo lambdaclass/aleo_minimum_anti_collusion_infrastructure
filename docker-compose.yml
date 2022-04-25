@@ -1,12 +1,15 @@
 services:
   server:
     build:
-      context: ./server
+      context: .
+      dockerfile: server/Dockerfile
       args:
         HOST: docker
         REDIS_URL: redis://redis:6379
     ports:
       - 3000:3000
+    depends_on:
+      - redis
   
   client:
     build:
