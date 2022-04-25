@@ -6,6 +6,7 @@ ENV REDIS_URL=${REDIS_URL}
 ENV HOST=${HOST}
 WORKDIR /aleo_maci
 COPY . .
+RUN apt update && apt install libssl-dev
 RUN cargo build --release
 
 # RUN STAGE
