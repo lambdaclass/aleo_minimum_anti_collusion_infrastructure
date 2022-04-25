@@ -19,6 +19,9 @@ build:
 run_server:
 	HOST="localhost" REDIS_URL="redis://127.0.0.1:6379" cargo run -p aleo-maci-server
 
+run_server_docker:
+	docker-compose up server
+
 test:
 	cargo test
 
