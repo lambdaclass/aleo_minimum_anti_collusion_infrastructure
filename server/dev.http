@@ -15,14 +15,20 @@ Content-Type: application/json
     "public_key": ""
 }
 
-
+//Send Vote
 POST http://127.0.0.1:3000/election/msg
 Content-Type: application/json
 
 {
-    "aleo_transaction_id": "at1l4zsvy00qnc5ztmxewl2c7x2sv28q7nasf55zcah20l5hg66usrqztr8zf"
+    "aleo_transaction_id": "at1xxgt6a69vug2vfelz6p39pvl4dng5emzjtwvpqvmy5t900t9wsxsxlretj"
 }
 
+//Do Tally
 POST http://127.0.0.1:3000/election/start_tally
 
 
+//transactions ids
+at1cf6aaeq0xzyajupxvp6tvn0v2yzud5y39nukx93cf5vhwrnnnvqqsy5t37
+at1nzcdpeqlkzgasa0slr9vypa2ck70xf8qq3lvvnd2lyq3588nxuxqejpuqn
+at1l4zsvy00qnc5ztmxewl2c7x2sv28q7nasf55zcah20l5hg66usrqztr8zf
+at1xxgt6a69vug2vfelz6p39pvl4dng5emzjtwvpqvmy5t900t9wsxsxlretj
