@@ -1,4 +1,3 @@
-use ff::PrimeField;
 use poseidon_rs::Fr;
 use poseidon_rs::Poseidon;
 
@@ -12,7 +11,6 @@ pub fn hash(v1: Fr, v2: Fr) -> Fr {
 
 pub fn generate_merkle_root(leaves: Vec<Fr>) -> Fr {
     let mut leaves = leaves.clone();
-    let tree_height = ((leaves.len() as f32).log2().round()) as usize;
 
     for i in 0..(((leaves.len() as f32).log2().round()) as usize) {
         //For max_options
