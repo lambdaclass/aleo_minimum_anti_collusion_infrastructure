@@ -24,10 +24,7 @@ Content-Type: application/json
 }
 
 //2. Do Tally
-POST http://127.0.0.1:3000/election/start_tally
-
-
-//3. Get result
+POST http://127.0.0.1:3000/election/tally/start
 
 
 //transactions ids

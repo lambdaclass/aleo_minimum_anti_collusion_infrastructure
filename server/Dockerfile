@@ -1,10 +1,10 @@
 # BUILD STAGE
-FROM rust:1.58 as build
+FROM rust:1.60 as build
 ARG HOST
 ARG REDIS_URL
 ENV REDIS_URL=${REDIS_URL}
 ENV HOST=${HOST}
-RUN apt-get update && apt-get install -y libssl-dev
+RUN apt-get install libssl-dev
 WORKDIR /aleo_maci
 RUN wget "https://github.com/AleoHQ/leo/releases/download/v1.5.3/leo-v1.5.3-x86_64-unknown-linux-gnu.zip" -O leo_temp.zip && \
     unzip leo_temp.zip && \

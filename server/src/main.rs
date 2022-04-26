@@ -55,7 +55,8 @@ async fn main() {
 
     let start_tally = election_base
         .and(warp::post())
-        .and(warp::path("start_tally"))
+        .and(warp::path("tally"))
+        .and(warp::path("start"))
         .and(warp::path::end())
         .and(warp_pool.clone())
         .and_then(election_controllers::start_tally);

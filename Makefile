@@ -43,3 +43,8 @@ run_circuits:
 clean_circuits:
 	cd circuits/tally;leo clean
 
+send_vote:
+	cargo run --bin aleo-maci-cli vote-for 1
+
+start_tally:
+	curl -X POST http://127.0.0.1:3000/election/tally/start

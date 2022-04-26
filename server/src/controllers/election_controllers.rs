@@ -102,11 +102,8 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
     );
 
     println!("Tally finished: {:?}", tally);
-    // Transform votes to a fixed array of MAX_AMOUNT_OF_VOTES elements
-    // if there is and invalid vote option, it will be count as 0
-    // if there is less than MAX_AMOUNT_OF_VOTES, the reamaning votes will be count as 0
-    // Generate circuit input file
 
+    // Generate circuit input file
     println!("Generating circuit input...");
     generate_input_file(votes_to_fix_array(&tally.votes), &tally.votes_markle_root);
 
@@ -119,7 +116,6 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
         .output()
         .expect("failed to execute process");
 
-    // generate tall
     println!("Circuit execution finished.");
 
     Ok(warp::reply::json(&tally))
