@@ -1,16 +1,9 @@
+use crate::models::{Election, Tally};
 use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
-use crate::utils::{votes_to_fix_array, MAX_AMOUNT_OF_VOTES};
+use crate::utils::votes_to_fix_array;
 use crate::RedisConnectionManager;
-use crate::{
-    models::{Election, Tally},
-    services::leo_io,
-};
-use aleo_maci_libs::{
-    merkle_tree::generate_merkle_root, rcp::get_transaction_public_data, rcp::public_data_to_vote,
-};
-use ff::PrimeField;
-use poseidon_rs::Fr;
+use aleo_maci_libs::{rcp::get_transaction_public_data, rcp::public_data_to_vote};
 
 use r2d2_redis::redis::Commands;
 use serde::Deserialize;
@@ -25,16 +18,11 @@ pub struct ElectionCreate {
 }
 
 #[derive(Debug, Deserialize)]
-pub struct ElectionSignUp {
-    public_key: String,
-}
+pub struct ElectionSignUp {}
 
 #[derive(Debug, Deserialize)]
 pub struct ElectionMsg {
     aleo_transaction_id: String,
-}
-pub struct StartTally {
-    tally_id: String,
 }
 
 pub async fn create(
@@ -48,7 +36,7 @@ pub async fn create(
 
 pub async fn sign_up(
     _data: ElectionSignUp,
-    pool: Pool<RedisConnectionManager>,
+    _pool: Pool<RedisConnectionManager>,
 ) -> Result<Json, warp::Rejection> {
     Ok(warp::reply::json(&json!({"msg":"not implemented"})))
 }

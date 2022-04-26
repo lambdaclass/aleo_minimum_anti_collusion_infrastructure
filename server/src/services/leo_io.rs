@@ -61,13 +61,12 @@ pub fn fr_string_to_leo_str(fr: String) -> String {
 }
 
 mod tests {
-    use super::*;
 
     #[test]
     fn test_fr_leo() {
         let fr_str =
             "Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443)".to_string();
-        let str = fr_string_to_leo_str(fr_str);
+        let str = super::fr_string_to_leo_str(fr_str);
         assert_eq!(
             str,
             "6081127065217055003429398673533374549058098389318475736416753929574343365699"

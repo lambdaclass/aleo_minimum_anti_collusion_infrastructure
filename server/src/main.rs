@@ -8,6 +8,8 @@ use r2d2_redis::{r2d2, RedisConnectionManager};
 use std::env;
 use warp::Filter;
 
+const APP_PORT: u16 = 3000;
+
 #[tokio::main]
 async fn main() {
     let host = env::var("HOST").expect("$HOST not setted");
@@ -18,7 +20,7 @@ async fn main() {
         _ => [127, 0, 0, 1],
     };
 
-    println!("HOST {}", redis_url);
+    println!("HOST {}:{}", host, APP_PORT);
     println!("REDIS_URL {}", redis_url);
 
     let manager = RedisConnectionManager::new(redis_url).unwrap();
@@ -61,6 +63,6 @@ async fn main() {
     let filters = create.or(sign_up).or(msg).or(start_tally);
 
     warp::serve(filters) // 5.
-        .run((host_for_warp, 3000)) // 6.
+        .run((host_for_warp, APP_PORT)) // 6.
         .await;
 }

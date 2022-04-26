@@ -28,6 +28,8 @@ pub fn generate_merkle_root(leaves: Vec<Fr>) -> Fr {
 }
 #[cfg(test)]
 mod tests {
+    use ff::PrimeField;
+
     use super::*;
     #[test]
     fn hash_1_2() {

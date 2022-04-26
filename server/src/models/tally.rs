@@ -29,7 +29,7 @@ impl Tally {
         tally
     }
 
-    pub fn votes_to_string(&self) -> Vec<String> {
+    pub fn _votes_to_string(&self) -> Vec<String> {
         self.votes
             .clone()
             .into_iter()
