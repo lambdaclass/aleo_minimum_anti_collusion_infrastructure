@@ -35,7 +35,7 @@ pub struct StartTally {
 
 pub async fn create(
     data: ElectionCreate,
-    pool: Pool<RedisConnectionManager>,
+    _pool: Pool<RedisConnectionManager>,
 ) -> Result<Json, warp::Rejection> {
     let election = Election::new(data.sign_up_duration, data.voting_duration);
 
@@ -43,7 +43,7 @@ pub async fn create(
 }
 
 pub async fn sign_up(
-    data: ElectionSignUp,
+    _data: ElectionSignUp,
     pool: Pool<RedisConnectionManager>,
 ) -> Result<Json, warp::Rejection> {
     Ok(warp::reply::json(&json!({"msg":"not implemented"})))

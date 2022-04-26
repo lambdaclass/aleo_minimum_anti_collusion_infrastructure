@@ -1,10 +1,8 @@
-use std::fs;
 use std::fs::File;
 use std::io::prelude::*;
 use std::str;
 const MAX_VOTES: usize = 32;
 const TALLY_IN_FILE_PATH: &str = "./circuits/tally/inputs/tally.in";
-const TALLY_OUT_FILE_PATH: &str = "./../circuits/tally/outputs/tally.out";
 use num::{BigUint, Num};
 
 pub fn generate_input_file(votes: [u32; MAX_VOTES], vote_merkle_root: &str) {
@@ -52,11 +50,6 @@ pub fn generate_input_file(votes: [u32; MAX_VOTES], vote_merkle_root: &str) {
     file.write_all(input_as_string.as_bytes()).unwrap();
 }
 
-pub fn read_output_file() {
-    let contents = fs::read_to_string(TALLY_OUT_FILE_PATH).unwrap();
-    println!("Contents: {}", contents);
-}
-
 ///Converts a string with Fr format to a decimal string for Leo
 ///Ex: Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443) ->
 /// 6081127065217055003429398673533374549058098389318475736416753929574343365699
@@ -69,10 +62,6 @@ pub fn fr_string_to_leo_str(fr: String) -> String {
 
 mod tests {
     use super::*;
-    #[test]
-    fn test_read_file() {
-        read_output_file();
-    }
 
     #[test]
     fn test_fr_leo() {
