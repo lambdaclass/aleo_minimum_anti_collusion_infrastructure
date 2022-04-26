@@ -1,7 +1,6 @@
 // Note: this requires the `derive` feature
 use aleo_maci_libs::{rcp, transactions};
 use clap::{Parser, Subcommand};
-use reqwest::blocking::Response;
 use ring::{
     rand,
     signature::{self, KeyPair},
@@ -165,7 +164,7 @@ fn main() {
                 .send();
 
             match send_result {
-                Ok(v) => {
+                Ok(_) => {
                     println!("Vote process finished successfully")
                 }
                 Err(_) => {
