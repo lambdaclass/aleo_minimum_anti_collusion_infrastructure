@@ -20,7 +20,9 @@ POST http://127.0.0.1:3000/election/msg
 Content-Type: application/json
 
 {
-    "aleo_transaction_id": "1"
+    "aleo_transaction_id": "at1l4zsvy00qnc5ztmxewl2c7x2sv28q7nasf55zcah20l5hg66usrqztr8zf"
 }
+
+POST http://127.0.0.1:3000/election/start_tally
 
 
