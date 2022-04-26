@@ -61,7 +61,6 @@ pub fn fr_string_to_leo_str(fr: String) -> String {
 }
 
 mod tests {
-
     #[test]
     fn test_fr_leo() {
         let fr_str =
