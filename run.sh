@@ -1,1 +1,1 @@
-cargo run --bin aleo-maci-cli $@
+cargo run --release --bin aleo-maci-cli $@
