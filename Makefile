@@ -17,7 +17,7 @@ build:
 	cargo build
 
 run_server:
-	HOST="localhost" REDIS_URL="redis://127.0.0.1:6379" cargo run -p aleo-maci-server
+	HOST="localhost" REDIS_URL="redis://127.0.0.1:6379" cargo run --release -p aleo-maci-server
 
 run_server_docker:
 	docker-compose up server
@@ -44,7 +44,7 @@ clean_circuits:
 	cd circuits/tally;leo clean
 
 send_vote:
-	cargo run --bin aleo-maci-cli vote-for 1
+	cargo run --release --bin aleo-maci-cli vote-for 1
 
 start_tally:
 	curl -X POST http://127.0.0.1:3000/election/tally/start
