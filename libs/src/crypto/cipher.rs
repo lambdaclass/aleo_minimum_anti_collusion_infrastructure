@@ -1,7 +1,7 @@
 use ff::{Field, PrimeField};
 use mimc_rs::{Fr, Mimc7};
 
-fn encrypt(mut message: Fr, shared_key: Fr) -> Fr {
+pub fn encrypt(mut message: Fr, shared_key: Fr) -> Fr {
     //TO DO: Generate a proper IV (Initialization Value)
     //Note:: This work as a salt
     let initialization_vector = Fr::from_str("0").unwrap();
@@ -11,7 +11,7 @@ fn encrypt(mut message: Fr, shared_key: Fr) -> Fr {
     message
 }
 
-fn decrypt(mut message: Fr, shared_key: Fr) -> Fr {
+pub fn decrypt(mut message: Fr, shared_key: Fr) -> Fr {
     let initialization_vector = Fr::from_str("0").unwrap();
     let mimc7 = Mimc7::new(91);
     let key_hash = mimc7.hash(&shared_key, &initialization_vector);

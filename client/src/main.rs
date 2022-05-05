@@ -1,6 +1,9 @@
 // Note: this requires the `derive` feature
-use aleo_maci_libs::{rcp, transactions};
+use aleo_maci_libs::{crypto, rcp, transactions};
 use clap::{Parser, Subcommand};
+use ff::{Field, PrimeField};
+use mimc_rs::Fr;
+use num::{BigUint, Num};
 use ring::{
     rand,
     signature::{self, KeyPair},
@@ -116,12 +119,21 @@ fn main() {
             println!("Generating the transaction...");
             println!("This may take a while");
 
+            let shared_key: Fr = Fr::from_str("42").unwrap();
+            let fr_data = Fr::from_str(&message_data.to_string()).unwrap();
+            let encrypted_data_str = crypto::cipher::encrypt(fr_data, shared_key).to_string();
             //TO DO: Let the user make an account and use it, instead
             //of creating it with a random one
-            let mut transaction_payload: Vec<u8> = Vec::new();
-            transaction_payload.push(*message_data);
-            let transaction =
-                transactions::create_store_data_transaction(transaction_payload, true);
+            let encrypted_data_str =
+                encrypted_data_str[5..(encrypted_data_str.len() - 1)].to_string();
+            let encrypted_data_big_uint = BigUint::from_str_radix(&encrypted_data_str, 16).unwrap();
+
+            let transaction = transactions::create_store_data_transaction(
+                encrypted_data_big_uint.to_bytes_le(),
+                true,
+            );
+
+            //TO DO: Use the real shared key
             let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
             println!("The transaction hexdata is: \n {}", encoded_data);
             println!("Sending transactions to multiple nodes ...");
