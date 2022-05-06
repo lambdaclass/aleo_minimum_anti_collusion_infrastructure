@@ -1,8 +1,10 @@
 // Note: this requires the `derive` feature
-use aleo_maci_libs::{crypto, rcp, transactions};
+use aleo_maci_libs::{
+    crypto,
+    crypto::{Fr, PrimeField},
+    rcp, transactions,
+};
 use clap::{Parser, Subcommand};
-use ff::{Field, PrimeField};
-use mimc_rs::Fr;
 use num::{BigUint, Num};
 use ring::{
     rand,
@@ -129,7 +131,7 @@ fn main() {
             let encrypted_data_big_uint = BigUint::from_str_radix(&encrypted_data_str, 16).unwrap();
 
             let transaction = transactions::create_store_data_transaction(
-                encrypted_data_big_uint.to_bytes_le(),
+                encrypted_data_big_uint.to_bytes_be(),
                 true,
             );
 

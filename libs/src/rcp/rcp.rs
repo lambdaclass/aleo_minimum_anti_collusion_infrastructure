@@ -1,4 +1,6 @@
+use crate::crypto::{cipher, Fr, PrimeField};
 use futures::future::join_all;
+use num::{BigUint, Num};
 use serde_json::{json, Value};
 
 //These are nodes we have found that are usually up and answering quickly
@@ -84,6 +86,23 @@ pub fn public_data_to_vote(data: String) -> String {
     let sliced_str: &str = sliced_string.as_str();
     let u32_vote = u32::from_str_radix(sliced_str, 16).unwrap();
     u32_vote.to_string()
+}
+
+///Converts the public data string of a record to a vote string
+pub fn encrypted_public_data_to_vote(data: String) -> String {
+    let shared_key = Fr::from_str("42").unwrap();
+    println!("Data str: {:?}", data);
+    let first_element = data[0..64].to_string();
+    println!("First element: {:?}", first_element);
+    let encrypted_big_int = BigUint::from_str_radix(&first_element, 16).unwrap();
+    println!("First element big int: {:?}", encrypted_big_int.to_string());
+    let encrypted_fr = Fr::from_str(&encrypted_big_int.to_string()).unwrap();
+
+    let decrypted_fr = cipher::decrypt(encrypted_fr, shared_key);
+    println!("Decrypted: {}", decrypted_fr.to_string());
+    let decrypted_fr_str = decrypted_fr.to_string();
+    //We use the first 2 elements of the string to represent the number
+    decrypted_fr_str[decrypted_fr_str.len() - 2..decrypted_fr_str.len() - 1].to_string()
 }
 
 pub async fn get_transactions_public_data(

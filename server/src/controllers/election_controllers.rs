@@ -3,7 +3,7 @@ use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
 use crate::utils::votes_to_fix_array;
 use crate::RedisConnectionManager;
-use aleo_maci_libs::{rcp::get_transaction_public_data, rcp::public_data_to_vote};
+use aleo_maci_libs::{rcp::encrypted_public_data_to_vote, rcp::get_transaction_public_data};
 
 use r2d2_redis::redis::Commands;
 use serde::Deserialize;
@@ -85,7 +85,7 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
     let mut votes: Vec<String> = Vec::new();
     for v in votes_ids_from_pool {
         let public_data = get_transaction_public_data(v.to_string()).await;
-        let vote = public_data_to_vote(public_data.unwrap());
+        let vote = encrypted_public_data_to_vote(public_data.unwrap());
         votes.push(vote);
     }
 
