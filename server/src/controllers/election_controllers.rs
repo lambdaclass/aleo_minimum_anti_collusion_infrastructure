@@ -78,17 +78,19 @@ pub async fn store_msg(
 pub async fn create_whitelist(
     data: Whitelist,
     pool: Pool<RedisConnectionManager>,
-) -> Result<Json, warp::Rejection> {
+) -> Result<impl warp::Reply, warp::Rejection> {
     //TO DO: Don't store repeated values
     let mut con = match pool.get() {
         Ok(v) => v,
         Err(_) => return Err(warp::reject::custom(DBError)),
     };
 
-    let _: () = con.rpush("whitelist", data.accounts).unwrap();
+    let _: () = con.del("whitelist").unwrap();
+    let _: () = con.lpush("whitelist", data.accounts).unwrap();
 
-    Ok(warp::reply::json(
-        &json!({"msg":"the whitelist has been properly generated"}),
+    Ok(warp::reply::with_status(
+        "the whitelist was stored successfully",
+        StatusCode::CREATED,
     ))
 }
 
