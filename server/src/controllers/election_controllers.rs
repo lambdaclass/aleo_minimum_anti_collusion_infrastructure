@@ -71,7 +71,7 @@ pub async fn create_whitelist(
     let _: () = con.rpush("whitelist", data.accounts).unwrap();
 
     Ok(warp::reply::json(
-        &json!({"whitelist":"the whitelist has been properly generated"}),
+        &json!({"msg":"the whitelist has been properly generated"}),
     ))
 }
 
