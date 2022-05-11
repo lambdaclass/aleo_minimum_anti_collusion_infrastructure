@@ -52,7 +52,7 @@ pub async fn store_msg(
         Err(_) => return Err(warp::reject::custom(DBError)),
     };
 
-    //checks if the transaction is already store
+    //Checks if the transaction is already stored
     let key_pos: Result<u32, RedisError> =
         con.lpos("votes", &data.aleo_transaction_id, LposOptions::default());
 
