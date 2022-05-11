@@ -9,8 +9,9 @@ use r2d2_redis::redis::{Commands, LposOptions, RedisError};
 use serde::Deserialize;
 use serde_json::json;
 use std::process::Command;
+use warp::http::HeaderValue;
 use warp::hyper::StatusCode;
-use warp::reply::Json;
+use warp::reply::{Json, Response};
 
 #[derive(Debug, Deserialize)]
 pub struct ElectionCreate {
@@ -88,10 +89,13 @@ pub async fn create_whitelist(
     let _: () = con.del("whitelist").unwrap();
     let _: () = con.lpush("whitelist", data.accounts).unwrap();
 
-    Ok(warp::reply::with_status(
-        "the whitelist was stored successfully",
-        StatusCode::CREATED,
-    ))
+    let body = json!({"msg": "Whitelist created successfully"});
+    let mut response = Response::new(body.to_string().into());
+    response
+        .headers_mut()
+        .insert("Content-Type", HeaderValue::from_static("application/json"));
+
+    Ok(warp::reply::with_status(response, StatusCode::CREATED))
 }
 
 #[derive(Debug)]
