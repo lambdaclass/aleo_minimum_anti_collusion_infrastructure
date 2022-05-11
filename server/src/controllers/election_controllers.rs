@@ -1,4 +1,4 @@
-use crate::models::{Election, Tally};
+use crate::models::{Election, Tally, Whitelist};
 use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
 use crate::utils::votes_to_fix_array;
@@ -55,6 +55,23 @@ pub async fn store_msg(
 
     Ok(warp::reply::json(
         &json!({"msg":"your vote was succesuffly stored"}),
+    ))
+}
+
+pub async fn create_whitelist(
+    data: Whitelist,
+    pool: Pool<RedisConnectionManager>,
+) -> Result<Json, warp::Rejection> {
+    //TO DO: Don't store repeated values
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    let _: () = con.rpush("whitelist", data.accounts).unwrap();
+
+    Ok(warp::reply::json(
+        &json!({"whitelist":"the whitelist has been properly generated"}),
     ))
 }
 
