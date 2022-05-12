@@ -1,5 +1,6 @@
 init:
 	cargo install leo-lang
+	npm install -g esy
 
 ops:
 	redis-server --daemonize yes
