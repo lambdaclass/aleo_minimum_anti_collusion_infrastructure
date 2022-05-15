@@ -5,7 +5,7 @@
 
 ### Alternative 1: Nix
 
-To use the project you need to have [nix](https://nixos.org/download.html) installed.
+To use the project you need to have [nix](https://nix.dev/tutorials/install-nix) installed.
 
 Once installed on your system, run:
 
