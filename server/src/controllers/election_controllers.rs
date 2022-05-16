@@ -1,4 +1,4 @@
-use crate::models::{Election, Tally};
+use crate::models::{Election, Tally, Whitelist};
 use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
 use crate::utils::votes_to_fix_array;
@@ -9,8 +9,9 @@ use r2d2_redis::redis::{Commands, LposOptions, RedisError};
 use serde::Deserialize;
 use serde_json::json;
 use std::process::Command;
+use warp::http::HeaderValue;
 use warp::hyper::StatusCode;
-use warp::reply::Json;
+use warp::reply::{Json, Response};
 
 #[derive(Debug, Deserialize)]
 pub struct ElectionCreate {
@@ -73,6 +74,28 @@ pub async fn store_msg(
             ))
         }
     }
+}
+
+pub async fn create_whitelist(
+    data: Whitelist,
+    pool: Pool<RedisConnectionManager>,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    //TO DO: Don't store repeated values
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    let _: () = con.del("whitelist").unwrap();
+    let _: () = con.lpush("whitelist", data.accounts).unwrap();
+
+    let body = json!({"msg": "Whitelist created successfully"});
+    let mut response = Response::new(body.to_string().into());
+    response
+        .headers_mut()
+        .insert("Content-Type", HeaderValue::from_static("application/json"));
+
+    Ok(warp::reply::with_status(response, StatusCode::CREATED))
 }
 
 #[derive(Debug)]
