@@ -1,8 +1,14 @@
 init:
 	cargo install leo-lang
 
+nix_shell:
+	nix-shell
+
 ops:
 	redis-server --daemonize yes
+
+stop_ops:
+	redis-cli shutdown
 
 ops_docker:
 	docker-compose up -d redis
@@ -14,7 +20,7 @@ stop_docker:
 	docker-compose down redis	
 	
 build:
-	cargo build
+	cargo build --release
 
 run_server:
 	HOST="localhost" REDIS_URL="redis://127.0.0.1:6379" cargo run --release -p aleo-maci-server
