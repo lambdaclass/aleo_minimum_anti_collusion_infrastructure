@@ -13,6 +13,7 @@ mkShell {
     git
     nixpkgs.rust-bin.stable.latest.default
     redis
+    curl
   ]
   ++ optionals stdenv.isDarwin (with darwin.apple_sdk.frameworks; [
     # For file_system on macOS. 

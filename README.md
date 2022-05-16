@@ -5,21 +5,27 @@
 
 ### Alternative 1: Nix
 
-To use the project you need to have [nix](https://nixos.org/download.html) installed.
+To use the project you need to have [nix](https://nix.dev/tutorials/install-nix) installed.
 
-Once installed on your system, run:
+To enter nix-shell, use:
 
-`nix-shell`
+`make nix-shell`
 
-To start the server run in a second terminal:
+If it's the first time using this app run:
 
+`make init`
+
+To start the server run:
+
+`make ops`
 `make run_server`
 
-To use the cli run:
+Make ops will start a redis DB that can be shutdown with:
 
-`./run_cli.sh`
+`make stop_ops`
 
-
+To use the cli to interact with the server use:
+`./run.sh`
 ### Alternative 2: Docker
 
 You can also run the server with docker

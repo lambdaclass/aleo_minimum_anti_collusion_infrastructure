@@ -1,15 +1,17 @@
-use crate::models::{Election, Tally};
+use crate::models::{Election, Tally, Whitelist};
 use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
 use crate::utils::votes_to_fix_array;
 use crate::RedisConnectionManager;
 use aleo_maci_libs::{rcp::get_transaction_public_data, rcp::public_data_to_vote};
 
-use r2d2_redis::redis::Commands;
+use r2d2_redis::redis::{Commands, LposOptions, RedisError};
 use serde::Deserialize;
 use serde_json::json;
 use std::process::Command;
-use warp::reply::Json;
+use warp::http::HeaderValue;
+use warp::hyper::StatusCode;
+use warp::reply::{Json, Response};
 
 #[derive(Debug, Deserialize)]
 pub struct ElectionCreate {
@@ -44,18 +46,56 @@ pub async fn sign_up(
 pub async fn store_msg(
     data: ElectionMsg,
     pool: Pool<RedisConnectionManager>,
-) -> Result<Json, warp::Rejection> {
+) -> Result<impl warp::Reply, warp::Rejection> {
     //TO DO: Don't store repeated values
     let mut con = match pool.get() {
         Ok(v) => v,
         Err(_) => return Err(warp::reject::custom(DBError)),
     };
 
-    let _: () = con.lpush("votes", &data.aleo_transaction_id).unwrap();
+    //Checks if the transaction is already stored
+    let key_pos: Result<u32, RedisError> =
+        con.lpos("votes", &data.aleo_transaction_id, LposOptions::default());
 
-    Ok(warp::reply::json(
-        &json!({"msg":"your vote was succesuffly stored"}),
-    ))
+    match key_pos {
+        Ok(_) => {
+            //the transaction is already stored
+            Ok(warp::reply::with_status(
+                "the transaction_id has been already stored",
+                StatusCode::BAD_REQUEST,
+            ))
+        }
+        Err(_) => {
+            //store the transaction
+            let _: () = con.lpush("votes", &data.aleo_transaction_id).unwrap();
+            Ok(warp::reply::with_status(
+                "the transaction_id was stored successfully",
+                StatusCode::CREATED,
+            ))
+        }
+    }
+}
+
+pub async fn create_whitelist(
+    data: Whitelist,
+    pool: Pool<RedisConnectionManager>,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    //TO DO: Don't store repeated values
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    let _: () = con.del("whitelist").unwrap();
+    let _: () = con.lpush("whitelist", data.accounts).unwrap();
+
+    let body = json!({"msg": "Whitelist created successfully"});
+    let mut response = Response::new(body.to_string().into());
+    response
+        .headers_mut()
+        .insert("Content-Type", HeaderValue::from_static("application/json"));
+
+    Ok(warp::reply::with_status(response, StatusCode::CREATED))
 }
 
 #[derive(Debug)]
