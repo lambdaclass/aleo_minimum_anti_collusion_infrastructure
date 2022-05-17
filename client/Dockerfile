@@ -1,35 +1,21 @@
-FROM rust:1.58 as build
-
-#
-ARG SERVER_HOST
-ARG SERVER_PORT
-ENV SERVER_HOST=${SERVER_HOST}
-ARG SERVER_PORT=${SERVER_PORT}
-
-# create a new empty shell project
-RUN USER=root cargo new --bin aleo_voting_system
-WORKDIR /aleo_voting_system
-
-# copy over your manifests
-COPY ./Cargo.toml ./Cargo.toml
-
-# this build step will cache your dependencies
-RUN cargo build --release
-RUN rm src/*.rs
-
-# copy your source tree
-COPY ./src ./src
-
-# build for release
-RUN rm ./target/release/deps/aleo_maci_cli*
+# BUILD STAGE
+FROM rust:1.60 as build
+WORKDIR /aleo_maci
+RUN wget "https://github.com/AleoHQ/leo/releases/download/v1.5.3/leo-v1.5.3-x86_64-unknown-linux-gnu.zip" -O leo_temp.zip && \
+    unzip leo_temp.zip && \
+    rm leo_temp.zip
+COPY . .
 RUN cargo build --release
 
-# our final base
-FROM debian:buster-slim
-
-# copy the build artifact from the build stage
-COPY --from=build /aleo_voting_system/target/release/aleo-maci-cli .
-
-# set the startup command to run your binary
-
-CMD ["./aleo-maci-cli"]
+# RUN STAGE
+FROM debian:bookworm-slim
+ARG HOST
+ARG REDIS_URL
+ENV REDIS_URL=${REDIS_URL}
+ENV HOST=${HOST}
+ENV PATH="/aleo_maci:${PATH}" 
+RUN apt update && apt install -y openssl curl
+WORKDIR /aleo_maci
+COPY --from=build /aleo_maci/target/release/aleo-maci-cli .
+COPY --from=build /aleo_maci/leo .
+CMD ["aleo-maci-cli"]
