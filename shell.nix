@@ -12,6 +12,7 @@ mkShell {
   buildInputs = [
     git
     nixpkgs.rust-bin.stable.latest.default
+    nodejs-16_x
     redis
     curl
   ]
