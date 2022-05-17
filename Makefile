@@ -42,9 +42,12 @@ format:
 
 build_circuits:
 	cd circuits/tally;leo build
+	cd circuits/sign-up;leo build
+
 
 run_circuits:
 	cd circuits/tally;leo run
+	cd circuits/sign-up;leo run
 
 clean_circuits:
 	cd circuits/tally;leo clean
