@@ -1,4 +1,14 @@
 services:
+  dashboard:
+    build:
+      context: dashboard
+      args:
+        SERVER_URL: http://127.0.0.1:3000
+    ports:
+      - 4000:4000
+    depends_on:
+      - server
+
   server:
     build:
       context: .
@@ -10,15 +20,6 @@ services:
       - 3000:3000
     depends_on:
       - redis
-  
-  client:
-    build:
-      context: ./client
-      args:
-        SERVER_HOST: server
-        SERVER_PORT: 3000
-    depends_on:
-      - server
 
   redis:
     image: redis:6.2-alpine
