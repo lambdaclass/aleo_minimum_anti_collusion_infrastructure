@@ -3,18 +3,14 @@ use poseidon_rs::Poseidon;
 use std::fmt;
 
 pub fn hash(v1: Fr, v2: Fr) -> Fr {
-    let mut big_arr: Vec<Fr> = Vec::new();
-    big_arr.push(v1);
-    big_arr.push(v2);
+    let big_arr: Vec<Fr> = vec![v1, v2];
     let poseidon = Poseidon::new();
     poseidon.hash(big_arr).unwrap()
 }
 
 /// Generates the merkle root of the givven leaves using Poseidon algorithm
 /// Compatible with Leo MACI circuits
-pub fn generate_merkle_root(leaves: Vec<Fr>) -> Fr {
-    let mut leaves = leaves.clone();
-
+pub fn generate_merkle_root(mut leaves: Vec<Fr>) -> Fr {
     for i in 0..(((leaves.len() as f32).log2().round()) as usize) {
         //For max_options
         for j in 0..leaves.len() {
@@ -44,7 +40,7 @@ struct MerkleTree {
 
 impl MerkleTree {
     fn is_power_of_two(x: usize) -> bool {
-        return (x & (x - 1)) == 0;
+        (x & (x - 1)) == 0
     }
 
     pub fn new(leaves: Vec<Fr>) -> Result<Self, SizeNotPowerOfTwoError> {
