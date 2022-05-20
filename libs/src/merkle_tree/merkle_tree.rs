@@ -29,11 +29,6 @@ pub fn generate_merkle_root(leaves: Vec<Fr>) -> Fr {
     }
     leaves[0]
 }
-
-fn is_power_of_two(x: usize) -> bool {
-    return (x & (x - 1)) == 0;
-}
-
 #[derive(Debug, Clone)]
 struct SizeNotPowerOfTwoError;
 
@@ -48,8 +43,12 @@ struct MerkleTree {
 }
 
 impl MerkleTree {
+    fn is_power_of_two(x: usize) -> bool {
+        return (x & (x - 1)) == 0;
+    }
+
     pub fn new(leaves: Vec<Fr>) -> Result<Self, SizeNotPowerOfTwoError> {
-        if !is_power_of_two(leaves.len()) {
+        if !Self::is_power_of_two(leaves.len()) {
             return Err(SizeNotPowerOfTwoError);
         }
         let mut nodes = leaves;
@@ -58,8 +57,8 @@ impl MerkleTree {
         let mut offset = 0;
         //For each level
         for level in 1..tree_height + 1 {
-            if (level != 1) {
-                offset = offset + (amount_of_leaves / (2usize.pow(level as u32 - 2)));
+            if level != 1 {
+                offset += amount_of_leaves / (2usize.pow(level as u32 - 2));
             }
             //For each node in the level
             for j in 0..(amount_of_leaves / (2usize.pow(level as u32))) {
@@ -67,7 +66,36 @@ impl MerkleTree {
                 nodes.push(new_node);
             }
         }
+
         Ok(Self { nodes })
+    }
+
+    pub fn merkle_proof_for(&self, element_index: usize) -> Vec<Fr> {
+        let amount_leaves = (self.nodes.len() / 2) + 1;
+        let mut vec_proof: Vec<Fr> = Vec::new();
+        let mut path: Vec<usize> = Vec::new();
+        let mut width = amount_leaves;
+        let mut j = element_index;
+        let mut base = 0;
+        //Leaves
+
+        while self.nodes.len() > base + 1 {
+            let hash_index = (j / 2) * 2;
+            for k in hash_index..hash_index + 2 {
+                if k != j {
+                    vec_proof.push(self.nodes[base + k]);
+                }
+            }
+            path.push(j % 2); // path_index
+
+            base += width;
+            width >>= 1; // width /= 2;
+            j >>= 1; // j /= 2;
+        }
+
+        vec_proof.push(*self.nodes.last().unwrap());
+
+        vec_proof
     }
 }
 
@@ -118,5 +146,29 @@ mod tests {
             root.to_string(),
             "Fr(0x0d71cbc322578e133085b861a656d34b3abc2cc65ac11d24618aa53d49e5d443)"
         );
+    }
+
+    #[test]
+    fn merkle_proof_test() {
+        let one: Fr = Fr::from_str("1").unwrap();
+        let two: Fr = Fr::from_str("2").unwrap();
+        let three: Fr = Fr::from_str("3").unwrap();
+        let four: Fr = Fr::from_str("4").unwrap();
+        let five: Fr = Fr::from_str("5").unwrap();
+
+        let votes: [Fr; 32] = [
+            one, two, four, five, two, three, one, two, one, two, three, two, two, three, one, two,
+            one, two, three, two, two, three, one, two, one, two, three, two, two, three, one, two,
+        ];
+
+        let tree = MerkleTree::new(votes.to_vec()).unwrap();
+
+        let proof0 = tree.merkle_proof_for(0);
+
+        assert_eq!(proof0.last().unwrap(), tree.nodes.last().unwrap());
+
+        assert_eq!(proof0.first().unwrap(), &two);
+
+        assert_eq!(&proof0[1], &hash(four, five));
     }
 }
