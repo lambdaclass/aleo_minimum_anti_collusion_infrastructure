@@ -1,8 +1,12 @@
 // Note: this requires the `derive` feature
-use aleo_maci_libs::{rcp, transactions};
+use aleo_maci_libs::{aleo_account::account_utils, rcp, transactions};
 use clap::{Parser, Subcommand};
 use serde_json::{json, Value};
-use snarkvm::prelude::ToBytes;
+use snarkvm::{
+    dpc::testnet2::Testnet2,
+    prelude::{Account, PrivateKey, ToBytes},
+};
+use std::str::FromStr;
 #[derive(Parser)]
 #[clap(name = "aleo-maci-cli")]
 #[clap(about = "A CLI to use MACI in Aleo's blockchain", long_about = None)]
@@ -13,19 +17,21 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Sign Ups to an election
-    #[clap(arg_required_else_help = true)]
-    SignUp {
-        /// Public key to use. To generate one, call generate-key-pair
-        public_key: String,
-        /// Election id
-        election_id: String,
-    },
     /// Stores a vote for the given option in the blockchain
     #[clap(arg_required_else_help = true)]
     VoteFor {
         /// Vote for the given option, must be a number between 1 and the max amount of options
         message_data: u8,
+        /// Account private key to be used to send the vote
+        account_private_key: String,
+    },
+    /// Creates a new Aleo account, and outputs its private key
+    CreateAleoAccount {},
+    /// Helper function to retrieve the address of an account from its private key
+    #[clap(arg_required_else_help = true)]
+    AddressOf {
+        /// Account private key
+        account_private_key: String,
     },
 }
 fn main() {
@@ -33,22 +39,28 @@ fn main() {
 
     //TO DO: Add the logic to the commands
     match &args.command {
-        Commands::SignUp {
-            public_key: _,
-            election_id: _,
+        Commands::VoteFor {
+            message_data,
+            account_private_key,
         } => {
-            println!("Signing up ...");
-        }
-
-        Commands::VoteFor { message_data } => {
             println!("Generating the transaction...");
             println!("This may take a while");
 
-            //TO DO: Let the user make an account and use it, instead
-            //of creating it with a random one
+            let private_key_result = PrivateKey::<Testnet2>::from_str(account_private_key);
+
+            let private_key = match private_key_result {
+                Ok(value) => value,
+                Err(_) => {
+                    eprintln!("Account private key is not valid");
+                    return;
+                }
+            };
+
+            let account: Account<Testnet2> = Account::<Testnet2>::from(private_key);
+
             let transaction_payload: Vec<u8> = vec![*message_data];
             let transaction =
-                transactions::create_store_data_transaction(transaction_payload, true);
+                transactions::create_store_data_transaction(transaction_payload, account, true);
             let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
             println!("The transaction hexdata is: \n {}", encoded_data);
             println!("Sending transactions to multiple nodes ...");
@@ -70,16 +82,13 @@ fn main() {
             }
 
             if responses.len() == amount_of_bad_results {
-                println!("Aleo nodes can't be reached, try again later");
+                eprintln!("Aleo nodes can't be reached, try again later");
                 return;
             }
 
             println!("Nodes received the transaction succesfully");
-
             let transaction_id = ok_response.get("result").unwrap();
-
             println!("The transaction id is: {}", transaction_id);
-
             println!("Notifying the transaction submission to the tallying server ...");
 
             let request_json = json!({ "aleo_transaction_id": transaction_id });
@@ -95,12 +104,37 @@ fn main() {
                     println!("Vote process finished successfully")
                 }
                 Err(_) => {
-                    println!("Election server can't be reached, try again later")
+                    eprintln!("Election server can't be reached, try again later")
                 }
             }
 
             //TO DO: Add a command to check the block has been mined after a while
             //And retry without generating the transaction later
+        }
+
+        Commands::CreateAleoAccount {} => {
+            let new_account = account_utils::create_new_account();
+            println!("Your new account private key is");
+            println!("{}", new_account.private_key());
+            println!("Make sure to store it in a safe place");
+        }
+
+        Commands::AddressOf {
+            account_private_key,
+        } => {
+            let private_key_result = PrivateKey::<Testnet2>::from_str(account_private_key);
+
+            let private_key = match private_key_result {
+                Ok(value) => value,
+                Err(_) => {
+                    eprintln!("Account private key is not valid");
+                    return;
+                }
+            };
+
+            let address = Account::<Testnet2>::from(private_key).address();
+
+            println!("{}", address);
         }
     }
 }

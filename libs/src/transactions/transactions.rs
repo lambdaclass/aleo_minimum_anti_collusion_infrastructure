@@ -57,14 +57,18 @@ pub fn create_store_data_request(
 }
 
 /// Creates a transaction to store data in a register
-pub fn create_store_data_transaction(data: Vec<u8>, is_public: bool) -> Transaction<Testnet2> {
-    let mut rand = StdRng::from_entropy();
-    // The account should be generated in an upper layer
-    let new_account = Account::<Testnet2>::new(&mut rand);
-    let new_private_key = new_account.private_key();
-    let request = create_store_data_request(new_private_key.clone(), data, is_public);
-
-    Transaction::new(LedgerTree::<Testnet2>::default(), &request, &mut rand).unwrap()
+pub fn create_store_data_transaction(
+    data: Vec<u8>,
+    account: Account<Testnet2>,
+    is_public: bool,
+) -> Transaction<Testnet2> {
+    let request = create_store_data_request(account.private_key().clone(), data, is_public);
+    Transaction::new(
+        LedgerTree::<Testnet2>::default(),
+        &request,
+        &mut StdRng::from_entropy(),
+    )
+    .unwrap()
 }
 #[cfg(test)]
 mod tests {
