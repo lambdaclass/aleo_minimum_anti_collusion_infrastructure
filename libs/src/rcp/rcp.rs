@@ -44,7 +44,7 @@ pub fn sync_spray_transaction(transaction_hex_data: String) -> Vec<Result<Value,
         requests_results.push(v);
     }
 
-    return requests_results;
+    requests_results
 }
 
 /// Gets transaction first public record
