@@ -1,6 +1,6 @@
 @react.component
 let make = () => {
-    <nav className="navbar navbar-expand-lg bg-light">
+    <nav className="navbar navbar-expand-lg navbar-light bg-light">
         <div className="container-sm">
             <a className="navbar-brand" href="#">{"Maci for Aleo" -> React.string}</a>
             {React.cloneElement(
