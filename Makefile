@@ -45,9 +45,13 @@ format:
 
 build_circuits:
 	cd circuits/tally;leo build
+	cd circuits/whitelist;leo build
 
-run_circuits:
+run_tally_circuit:
 	cd circuits/tally;leo run
+
+run_whitelist_circuit:
+	cd circuits/whitelist;leo run
 
 clean_circuits:
 	cd circuits/tally;leo clean
