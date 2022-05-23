@@ -1,5 +1,5 @@
 // Note: this requires the `derive` feature
-use aleo_maci_libs::{rcp, transactions};
+use aleo_maci_libs::{aleo_account, rcp, transactions};
 use clap::{Parser, Subcommand};
 use serde_json::{json, Value};
 use snarkvm::prelude::ToBytes;
@@ -13,33 +13,21 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Sign Ups to an election
-    #[clap(arg_required_else_help = true)]
-    SignUp {
-        /// Public key to use. To generate one, call generate-key-pair
-        public_key: String,
-        /// Election id
-        election_id: String,
-    },
     /// Stores a vote for the given option in the blockchain
     #[clap(arg_required_else_help = true)]
     VoteFor {
         /// Vote for the given option, must be a number between 1 and the max amount of options
         message_data: u8,
     },
+
+    /// Creates a new Aleo account, and outputs its private key
+    CreateAleoAccount {},
 }
 fn main() {
     let args: Cli = Cli::parse();
 
     //TO DO: Add the logic to the commands
     match &args.command {
-        Commands::SignUp {
-            public_key: _,
-            election_id: _,
-        } => {
-            println!("Signing up ...");
-        }
-
         Commands::VoteFor { message_data } => {
             println!("Generating the transaction...");
             println!("This may take a while");
@@ -101,6 +89,13 @@ fn main() {
 
             //TO DO: Add a command to check the block has been mined after a while
             //And retry without generating the transaction later
+        }
+
+        Commands::CreateAleoAccount {} => {
+            let new_account = aleo_account::account::create_new_account();
+            println!("Your new account private key is");
+            println!("{}", new_account.private_key());
+            println!("Make sure to store it in a safe place");
         }
     }
 }
