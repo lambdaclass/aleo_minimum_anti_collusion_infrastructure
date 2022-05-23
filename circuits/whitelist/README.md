@@ -1,4 +1,4 @@
-# sign-up
+# whitelist
 
 ## Build Guide
 

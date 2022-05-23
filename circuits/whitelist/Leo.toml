@@ -1,7 +1,7 @@
 [project]
-name = "sign-up"
+name = "whitelist"
 version = "0.1.0"
-description = "The sign-up package"
+description = "The whitelist package"
 license = "MIT"
 
 [remote]
