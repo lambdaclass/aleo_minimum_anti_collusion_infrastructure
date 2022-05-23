@@ -87,11 +87,8 @@ fn main() {
             }
 
             println!("Nodes received the transaction succesfully");
-
             let transaction_id = ok_response.get("result").unwrap();
-
             println!("The transaction id is: {}", transaction_id);
-
             println!("Notifying the transaction submission to the tallying server ...");
 
             let request_json = json!({ "aleo_transaction_id": transaction_id });
