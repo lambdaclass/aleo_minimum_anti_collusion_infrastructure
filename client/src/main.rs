@@ -1,10 +1,6 @@
 // Note: this requires the `derive` feature
 use aleo_maci_libs::{rcp, transactions};
 use clap::{Parser, Subcommand};
-use ring::{
-    rand,
-    signature::{self, KeyPair},
-};
 use serde_json::{json, Value};
 use snarkvm::prelude::ToBytes;
 #[derive(Parser)]
@@ -17,8 +13,6 @@ struct Cli {
 
 #[derive(Subcommand)]
 enum Commands {
-    /// Generates a key pair to use with other commands
-    GenerateKeyPair {},
     /// Sign Ups to an election
     #[clap(arg_required_else_help = true)]
     SignUp {
@@ -27,37 +21,7 @@ enum Commands {
         /// Election id
         election_id: String,
     },
-    /// Publish a message, which can be a vote, a change of a public key, or both
-    /// As of this version only the vote option matters
-    // This should also get the user private key
-    // Current_pk may be changed for the full pair for ease of use
-    #[clap(arg_required_else_help = true)]
-    Publish {
-        /// Current public key
-        current_pk: String,
-        //new_pk should be current_pk by the default
-        /// New public key. Can be the same as current one
-        new_pk: String,
-        /// Number of option to vote
-        vote_option: u8,
-        /// Election id
-        election_id: String,
-    },
-    /// Creates a new election
-    #[clap(arg_required_else_help = true)]
-    CreateElection {
-        /// Sign up duration in seconds
-        sign_up_duration: u32,
-        /// Voting duration in seconds
-        voting_duration: u32,
-    },
-    /// Starts tallying the vote in the server
-    #[clap(arg_required_else_help = true)]
-    StartTally {
-        /// Election id
-        election_id: String,
-    },
-    /// [FOR TEST] stores data in the blockchain
+    /// Stores a vote for the given option in the blockchain
     #[clap(arg_required_else_help = true)]
     VoteFor {
         /// Vote for the given option, must be a number between 1 and the max amount of options
@@ -69,25 +33,6 @@ fn main() {
 
     //TO DO: Add the logic to the commands
     match &args.command {
-        Commands::GenerateKeyPair {} => {
-            println!("Generating key pair ...");
-            // Generate a key pair in PKCS#8 (v2) format.
-            let rng = rand::SystemRandom::new();
-            let pkcs8_bytes = signature::Ed25519KeyPair::generate_pkcs8(&rng).unwrap();
-
-            // Normally the application would store the PKCS#8 file persistently. Later
-            // it would read the PKCS#8 file from persistent storage to use it.
-
-            let key_pair = signature::Ed25519KeyPair::from_pkcs8(pkcs8_bytes.as_ref()).unwrap();
-            let public_key = key_pair.public_key().as_ref();
-
-            println!("Your public key is:\n 0x{}", hex::encode(public_key));
-            //Note: It's using PKCS 8 v2, so it's priv + pub
-            println!(
-                "Your key pair is (priv + pub, PKCS 8 v2) is :\n 0x{}",
-                hex::encode(pkcs8_bytes.as_ref())
-            );
-        }
         Commands::SignUp {
             public_key: _,
             election_id: _,
@@ -95,31 +40,13 @@ fn main() {
             println!("Signing up ...");
         }
 
-        Commands::Publish {
-            current_pk: _,
-            new_pk: _,
-            vote_option,
-            election_id: _,
-        } => {
-            println!("Publishing vote for {} ...", vote_option);
-        }
-        Commands::CreateElection {
-            sign_up_duration: _,
-            voting_duration: _,
-        } => {
-            println!("Creating election ...");
-        }
-        Commands::StartTally { election_id: _ } => {
-            println!("Starting tally ...");
-        }
         Commands::VoteFor { message_data } => {
             println!("Generating the transaction...");
             println!("This may take a while");
 
             //TO DO: Let the user make an account and use it, instead
             //of creating it with a random one
-            let mut transaction_payload: Vec<u8> = Vec::new();
-            transaction_payload.push(*message_data);
+            let transaction_payload: Vec<u8> = vec![*message_data];
             let transaction =
                 transactions::create_store_data_transaction(transaction_payload, true);
             let encoded_data = hex::encode(transaction.to_bytes_le().unwrap());
@@ -137,7 +64,7 @@ fn main() {
                         break;
                     }
                     Err(_) => {
-                        amount_of_bad_results = amount_of_bad_results + 1;
+                        amount_of_bad_results += 1;
                     }
                 }
             }
