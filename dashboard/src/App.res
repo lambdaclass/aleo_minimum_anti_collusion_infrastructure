@@ -1,4 +1,11 @@
 @react.component
-let root = () => {
-    <h1>{"Aleo Maci - Dashboard"->React.string}</h1>
+let make = () => {
+    let url = RescriptReactRouter.useUrl()
+
+    <Layout>
+        {switch url.path {
+            | list{} => <Home/>
+            | _ => <PageNotFound/>
+        }}
+    </Layout>
 }
