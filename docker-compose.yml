@@ -1,10 +1,21 @@
 services:
+  dashboard:
+    build:
+      context: dashboard
+      args:
+        SERVER_URL: http://127.0.0.1:3000
+    ports:
+      - 4000:4000
+    depends_on:
+      - server
+
   client:
     build:
       context: .
       dockerfile: client/Dockerfile
     depends_on:
       - server
+
   server:
     build:
       context: .
@@ -16,6 +27,7 @@ services:
       - 3000:3000
     depends_on:
       - redis
+      
   redis:
     image: redis:6.2-alpine
     ports:
