@@ -15,10 +15,11 @@ If it's the first time using this app run:
 
 `make init`
 
-To start the server run:
+To start the server and the dashboard run:
 
 `make ops`
 `make run_server`
+`make run_dashboard`
 
 Make ops will start a redis DB that can be shutdown with:
 
