@@ -73,7 +73,6 @@ impl MerkleTree {
         let mut width = amount_leaves;
         let mut j = element_index;
         let mut base = 0;
-        //Leaves
 
         while self.nodes.len() > base + 1 {
             let hash_index = (j / 2) * 2;
@@ -90,7 +89,6 @@ impl MerkleTree {
         }
 
         vec_proof.push(*self.nodes.last().unwrap());
-
         vec_proof
     }
 }
@@ -104,7 +102,7 @@ mod tests {
     fn hash_1_2() {
         assert_eq!(
             hash(Fr::from_str("1").unwrap(), Fr::from_str("2").unwrap()).to_string(),
-            "Fr(0x9811D68B946C0FC88B0B7FECCC1C35B792A732B3E072CA864DF3AEE94826684)"
+            "Fr(0x0ee79c570dd490a23b9d19037e0b20c5390b1cae9a6fd1c421233ca41408d396)"
         );
     }
 
