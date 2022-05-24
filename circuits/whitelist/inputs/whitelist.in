@@ -1,9 +1,0 @@
-// The program input for sign-up/src/main.leo
-[main]
-leaf: field = 98172398712398172387123786;
-proof: [field; 5] = [1238917241,123891723,1237864368,892634234,871623123876];
-path_index: [bool; 5] = [true,true,false,false,true];
-root: field = 12398413491283712368743;
-
-[registers]
-r0: bool = false;
