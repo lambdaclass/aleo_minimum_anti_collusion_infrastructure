@@ -1,3 +1,5 @@
+mod leo;
+
 // Note: this requires the `derive` feature
 use aleo_maci_libs::{aleo_account::account_utils, rcp, transactions};
 use clap::{Parser, Subcommand};
@@ -55,6 +57,17 @@ fn main() {
                     return;
                 }
             };
+
+            //TO DO: Generate input file for IO circuits
+            /*
+            Account for testing:
+            APrivateKey1zkp2Z1V8iEVKPehoGSJ37i6tUpTePF3qebdUoJfnDmhnEH5
+            aleo13j6lk3lvqjnymxjt3r080e226vt6933rv2e5dl2mt4226y5625qsumwz4z
+            */
+
+            let mock_whitelist =
+                vec!["aleo13j6lk3lvqjnymxjt3r080e226vt6933rv2e5dl2mt4226y5625qsumwz4z"; 31];
+            //leo::io::generate_input_file(leaf, proof, path_index, root)
 
             let account: Account<Testnet2> = Account::<Testnet2>::from(private_key);
 
