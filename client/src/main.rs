@@ -48,8 +48,7 @@ fn main() {
             message_data,
             account_private_key,
         } => {
-            println!("Generating the transaction...");
-            println!("This may take a while");
+            println!("Validationg Aleo account ...");
 
             let private_key_result = PrivateKey::<Testnet2>::from_str(account_private_key);
 
@@ -71,6 +70,7 @@ fn main() {
             let account: Account<Testnet2> = Account::<Testnet2>::from(private_key);
 
             // WHITELIST CIRCUIT
+            println!("Fetching tally whitelist ...");
             let account_fr = aleo_account_str_to_fr(&account.address().to_string()).unwrap();
             //This should be get from the server
             let mut test_string_whitelist: Vec<String> = Vec::with_capacity(32);
