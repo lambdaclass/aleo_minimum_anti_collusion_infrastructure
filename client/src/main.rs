@@ -93,6 +93,12 @@ fn main() {
                 &fr_to_leo_str(whitelist_merkle_tree.root()),
             );
 
+            std::process::Command::new("sh")
+                .arg("-c")
+                .arg("cd circuits/whitelist;leo run")
+                .output()
+                .expect("failed to execute process");
+
             // DATA TRANSACTION
             println!("Generating a transaction to submit on the blockchain ...");
             let transaction_payload: Vec<u8> = vec![*message_data];
