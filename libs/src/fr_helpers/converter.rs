@@ -9,7 +9,6 @@ pub fn fr_to_leo_str(fr: Fr) -> String {
     let fr_string = fr.to_string();
     let sliced_string = fr_string[5..(fr_string.len() - 1)].to_string();
     let sliced_str: &str = sliced_string.as_str();
-    println!("Sliced the string");
     BigUint::from_str_radix(sliced_str, 16).unwrap().to_string()
 }
 

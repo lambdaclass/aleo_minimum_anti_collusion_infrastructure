@@ -81,7 +81,7 @@ fn main() {
                 );
             }
 
-            println!("Whitelist Strings: {:?}", test_string_whitelist);
+            println!("Generating a proof of inclusion in the tally whitelist ...");
             let fr_whitelist = aleo_account_str_vec_to_fr_vec(test_string_whitelist).unwrap();
             let whitelist_merkle_tree = MerkleTree::new(fr_whitelist).unwrap();
             let whitelist_inclusion_proof =
@@ -94,6 +94,7 @@ fn main() {
             );
 
             // DATA TRANSACTION
+            println!("Generating a transaction to submit on the blockchain ...");
             let transaction_payload: Vec<u8> = vec![*message_data];
             let transaction =
                 transactions::create_store_data_transaction(transaction_payload, account, true);

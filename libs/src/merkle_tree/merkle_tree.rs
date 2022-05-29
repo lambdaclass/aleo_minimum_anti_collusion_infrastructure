@@ -130,7 +130,7 @@ impl MerkleTree {
     pub fn merkle_proof_for(&self, element_index: usize) -> MerkleProof {
         let amount_leaves = (self.nodes.len() / 2) + 1;
         let mut vec_proof: Vec<Fr> = Vec::new();
-        let mut path: Vec<usize> = Vec::new();
+        let mut path: Vec<bool> = Vec::new();
         let mut width = amount_leaves;
         let mut j = element_index;
         let mut base = 0;
@@ -142,7 +142,7 @@ impl MerkleTree {
                     vec_proof.push(self.nodes[base + k]);
                 }
             }
-            path.push(j % 2); // path_index
+            path.push(j % 2 != 0); // path_index
 
             base += width;
             width >>= 1; // width /= 2;
@@ -152,7 +152,7 @@ impl MerkleTree {
         // vec_proof.push(*self.nodes.last().unwrap());
 
         //TO DO: Update merkle path index
-        MerkleProof::new(self.nodes[element_index], vec_proof, [true].to_vec())
+        MerkleProof::new(self.nodes[element_index], vec_proof, path)
     }
 
     pub fn root(&self) -> Fr {
