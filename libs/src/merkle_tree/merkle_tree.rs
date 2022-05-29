@@ -29,7 +29,7 @@ pub fn generate_merkle_root(mut leaves: Vec<Fr>) -> Fr {
     leaves[0]
 }
 #[derive(Debug, Clone)]
-struct SizeNotPowerOfTwoError;
+pub struct SizeNotPowerOfTwoError;
 
 impl fmt::Display for SizeNotPowerOfTwoError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -38,17 +38,18 @@ impl fmt::Display for SizeNotPowerOfTwoError {
 }
 
 #[derive(Debug, Clone)]
-struct MerkleTree {
+pub struct MerkleTree {
     pub nodes: Vec<Fr>,
 }
 
 /*leaf: &str, proof: &str, path_index: &str, root: &str */
 #[derive(Debug, Clone)]
-struct MerkleProof {
+pub struct MerkleProof {
     pub leaf: Fr,
     pub proof_elements: Vec<Fr>,
     pub path_index: Vec<bool>,
 }
+
 impl MerkleProof {
     pub fn new(leaf: Fr, proof_elements: Vec<Fr>, path_index: Vec<bool>) -> Self {
         Self {
@@ -70,7 +71,7 @@ impl MerkleProof {
     }
 }
 #[derive(Debug, Clone)]
-struct MerkleProofStrings {
+pub struct MerkleProofStrings {
     leaf: String,
     proof_elements: String,
     path_index: String,
