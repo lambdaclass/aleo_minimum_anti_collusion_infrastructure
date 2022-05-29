@@ -1,7 +1,10 @@
 mod leo;
 
 // Note: this requires the `derive` feature
-use aleo_maci_libs::{aleo_account::account_utils, rcp, transactions};
+use aleo_maci_libs::{
+    aleo_account::account_utils, fr_helpers::converter::*, merkle_tree::MerkleTree, rcp,
+    transactions,
+};
 use clap::{Parser, Subcommand};
 use serde_json::{json, Value};
 use snarkvm::{
@@ -65,12 +68,32 @@ fn main() {
             aleo13j6lk3lvqjnymxjt3r080e226vt6933rv2e5dl2mt4226y5625qsumwz4z
             */
 
-            let mock_whitelist =
-                vec!["aleo13j6lk3lvqjnymxjt3r080e226vt6933rv2e5dl2mt4226y5625qsumwz4z"; 31];
-            //leo::io::generate_input_file(leaf, proof, path_index, root)
-
             let account: Account<Testnet2> = Account::<Testnet2>::from(private_key);
 
+            // WHITELIST CIRCUIT
+            let account_fr = aleo_account_str_to_fr(&account.address().to_string()).unwrap();
+            //This should be get from the server
+            let mut test_string_whitelist: Vec<String> = Vec::with_capacity(32);
+            test_string_whitelist.push(account.address().to_string());
+            for i in 0..31 {
+                test_string_whitelist.push(
+                    "aleo1nwmvkvqeeped6cdyamhpta9tsl5m89cf2l5pw502mmf65an4hcpq05wdps".to_string(),
+                );
+            }
+
+            println!("Whitelist Strings: {:?}", test_string_whitelist);
+            let fr_whitelist = aleo_account_str_vec_to_fr_vec(test_string_whitelist).unwrap();
+            let whitelist_merkle_tree = MerkleTree::new(fr_whitelist).unwrap();
+            let whitelist_inclusion_proof =
+                whitelist_merkle_tree.merkle_proof_for(0).to_proof_strings();
+            leo::io::generate_input_file(
+                &whitelist_inclusion_proof.leaf(),
+                &whitelist_inclusion_proof.proof_elements(),
+                &whitelist_inclusion_proof.path_index(),
+                &fr_to_leo_str(whitelist_merkle_tree.root()),
+            );
+
+            // DATA TRANSACTION
             let transaction_payload: Vec<u8> = vec![*message_data];
             let transaction =
                 transactions::create_store_data_transaction(transaction_payload, account, true);

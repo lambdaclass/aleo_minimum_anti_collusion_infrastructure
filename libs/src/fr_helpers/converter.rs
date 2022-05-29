@@ -9,6 +9,7 @@ pub fn fr_to_leo_str(fr: Fr) -> String {
     let fr_string = fr.to_string();
     let sliced_string = fr_string[5..(fr_string.len() - 1)].to_string();
     let sliced_str: &str = sliced_string.as_str();
+    println!("Sliced the string");
     BigUint::from_str_radix(sliced_str, 16).unwrap().to_string()
 }
 
@@ -25,9 +26,21 @@ pub fn aleo_account_str_to_fr(account_string: &str) -> Result<Fr, Box<dyn error:
     let (_hrp, data, _variant) = bech32::decode(account_string)?;
     let base32_bytes: Vec<u8> = Vec::<u8>::from_base32(&data)?;
     let fr_string = BigUint::from_bytes_be(&base32_bytes).to_string();
-    println!("Fr string: {}", fr_string);
     Ok(Fr::from_str(&fr_string).unwrap())
 }
+
+pub fn aleo_account_str_vec_to_fr_vec(
+    accounts: Vec<String>,
+) -> Result<Vec<Fr>, Box<dyn error::Error>> {
+    accounts.iter().map(|x| aleo_account_str_to_fr(x)).collect()
+}
+
+pub fn aleo_account_str_to_leo_input(
+    account_string: &str,
+) -> Result<String, Box<dyn error::Error>> {
+    Ok(fr_to_leo_str(aleo_account_str_to_fr(account_string)?))
+}
+
 mod tests {
     use ff::PrimeField;
 

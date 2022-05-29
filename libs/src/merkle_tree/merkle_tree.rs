@@ -85,6 +85,18 @@ impl MerkleProofStrings {
             path_index,
         }
     }
+
+    pub fn leaf(&self) -> String {
+        self.leaf.clone()
+    }
+
+    pub fn proof_elements(&self) -> String {
+        self.proof_elements.clone()
+    }
+
+    pub fn path_index(&self) -> String {
+        self.path_index.clone()
+    }
 }
 
 impl MerkleTree {

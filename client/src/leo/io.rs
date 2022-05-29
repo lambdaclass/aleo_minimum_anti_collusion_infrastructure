@@ -2,7 +2,8 @@ use std::io::prelude::*;
 use std::str;
 use std::{fs::File, path};
 const MAX_WHITELIST_SIZE: usize = 32;
-const WHITELIST_IN_FILE_PATH: &str = "whitelist.in";
+
+const WHITELIST_IN_FILE_PATH: &str = "./circuits/whitelist/inputs/whitelist.in";
 use num::{BigUint, Num};
 
 pub fn generate_input_file(leaf: &str, proof: &str, path_index: &str, root: &str) {
