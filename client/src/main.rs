@@ -93,6 +93,8 @@ fn main() {
                 &fr_to_leo_str(whitelist_merkle_tree.root()),
             );
 
+            //TO DO: Validate LEO is installed,
+            //fetch the circuit code from an external server if it's not on the machine
             std::process::Command::new("sh")
                 .arg("-c")
                 .arg("cd circuits/whitelist;leo run")
