@@ -6,6 +6,7 @@ use aleo_maci_libs::{
     transactions,
 };
 use clap::{Parser, Subcommand};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use snarkvm::{
     dpc::testnet2::Testnet2,
@@ -39,6 +40,12 @@ enum Commands {
         account_private_key: String,
     },
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+struct WhitelistFromServer {
+    pub accounts: Vec<String>,
+}
+
 fn main() {
     let args: Cli = Cli::parse();
 
@@ -71,21 +78,45 @@ fn main() {
 
             // WHITELIST CIRCUIT
             println!("Fetching tally whitelist ...");
-            let account_fr = aleo_account_str_to_fr(&account.address().to_string()).unwrap();
-            //This should be get from the server
-            let mut test_string_whitelist: Vec<String> = Vec::with_capacity(32);
-            test_string_whitelist.push(account.address().to_string());
-            for i in 0..31 {
-                test_string_whitelist.push(
-                    "aleo1nwmvkvqeeped6cdyamhpta9tsl5m89cf2l5pw502mmf65an4hcpq05wdps".to_string(),
-                );
-            }
+
+            let client = reqwest::blocking::Client::new();
+            let get_whitelist_result = client
+                .get("http://127.0.0.1:3000/election/whitelist")
+                .send();
+
+            let whitelist_response = match get_whitelist_result {
+                Ok(value) => value,
+                Err(_) => {
+                    eprintln!("Election server can't be reached, try again later");
+                    return;
+                }
+            };
+
+            let whitelist: WhitelistFromServer = whitelist_response.json().unwrap();
+
+            let account_position = match whitelist
+                .accounts
+                .iter()
+                .position(|address| *address == account.address().to_string())
+            {
+                Some(value) => value,
+                None => {
+                    eprintln!(
+                        "You are not in this election whitelist, and so you aren't allowed to vote"
+                    );
+                    return;
+                }
+            };
+
+            println!("Account position in whitelist: {}", account_position);
 
             println!("Generating a proof of inclusion in the tally whitelist ...");
-            let fr_whitelist = aleo_account_str_vec_to_fr_vec(test_string_whitelist).unwrap();
+            let fr_whitelist = aleo_account_str_vec_to_fr_vec(whitelist.accounts).unwrap();
             let whitelist_merkle_tree = MerkleTree::new(fr_whitelist).unwrap();
-            let whitelist_inclusion_proof =
-                whitelist_merkle_tree.merkle_proof_for(0).to_proof_strings();
+            let whitelist_inclusion_proof = whitelist_merkle_tree
+                .merkle_proof_for(account_position)
+                .to_proof_strings();
+
             leo::io::generate_input_file(
                 &whitelist_inclusion_proof.leaf(),
                 &whitelist_inclusion_proof.proof_elements(),
@@ -136,6 +167,7 @@ fn main() {
             println!("The transaction id is: {}", transaction_id);
             println!("Notifying the transaction submission to the tallying server ...");
 
+            // TO DO: Extract this logic to its own module
             let request_json = json!({ "aleo_transaction_id": transaction_id });
 
             let client = reqwest::blocking::Client::new();
