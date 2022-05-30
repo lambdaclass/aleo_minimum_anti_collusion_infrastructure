@@ -1,4 +1,4 @@
-let useGet = (url: string) => {
+let useGet = (url: string): Swr.swrResponse<Js.Json.t> => {
     let globalConfig = Swr.SwrConfiguration.useSWRConfig()
 
     let defaultFetcher = switch globalConfig -> Swr.fetcherGet {

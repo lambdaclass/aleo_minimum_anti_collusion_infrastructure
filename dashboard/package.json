@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@glennsl/bs-json": "^5.0.4",
     "@rescript/react": "^0.10.3",
     "@ryyppy/rescript-promise": "^2.1.0",
     "@testing-library/jest-dom": "^5.16.4",
