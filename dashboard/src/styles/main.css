@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap");
+
+body,
+nav {
+  background-color: rgb(18, 20, 29);
+  font-family: "Inter", sans-serif;
+}
+nav,
+a,
+h4 {
+  color: white;
+}
+a {
+  transition: all 200ms ease-in-out;
+  -webkit-transition: all 200ms ease-in-out;
+  -moz-transition: all 200ms ease-in-out;
+  -ms-transition: all 200ms ease-in-out;
+  -o-transition: all 200ms ease-in-out;
+}
+a:hover {
+  background: -webkit-linear-gradient(60deg, #0a5ffb, #00fbff);
+  background-clip: clip;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+.strong {
+  font-weight: bold;
+  background: -webkit-linear-gradient(60deg, #0afbbb, #00bbff);
+  background-clip: clip;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+nav a:hover .strong {
+  font-weight: bold;
+  background: transparent;
+  background-clip: clip;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.vote-container,
+.transaction-id-container {
+  background-color: #1e2029;
+  color: white;
+  border-radius: 1rem;
+  -webkit-border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  -ms-border-radius: 1rem;
+  -o-border-radius: 1rem;
+}
+.transaction-id-container {
+  border: #343746 1px solid;
+}
+.vote-container .card-header {
+  color: #00c0f9;
+}
+.card-label {
+  font-size: 0.8rem;
+  color: #b2b6c6;
+}
+.link {
+  text-decoration: none;
+}
+.icon {
+  background-color: blue !important;
+}
+.form-inline,
+.search,
+.form-inline input:focus {
+  background-color: #1e2029;
+  color: #b2b6c6;
+  border-radius: 1rem;
+  -webkit-border-radius: 1rem;
+  -moz-border-radius: 1rem;
+  -ms-border-radius: 1rem;
+  -o-border-radius: 1rem;
+}
+.form-inline {
+  display: flex;
+  border: #494e64 1px solid;
+}
+.form-inline input::placeholder {
+  font-size: 0.9rem;
+}
+.form-inline img {
+  width: 100%;
+}
+.search {
+  border: none;
+}
+.percent {
+  margin: auto;
+  max-width: 4rem;
+  padding: 0.25rem 0;
+  font-size: 0.75rem;
+  color: #18e48f;
+  background-color: rgba(24, 228, 143, 0.25);
+  border-radius: 10rem;
+  -webkit-border-radius: 10rem;
+  -moz-border-radius: 10rem;
+  -ms-border-radius: 10rem;
+  -o-border-radius: 10rem;
+}
