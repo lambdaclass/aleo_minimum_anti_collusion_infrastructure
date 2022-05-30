@@ -28,6 +28,10 @@ async fn main() {
 
     let warp_pool = warp::any().map(move || pool.clone());
 
+    let cors = warp::cors()
+        .allow_any_origin()
+        .allow_methods(vec!["GET", "POST", "DELETE", "PUT"]);
+
     let election_base = warp::path("election");
 
     let create = election_base
@@ -89,7 +93,8 @@ async fn main() {
         .or(get_votes)
         .or(start_tally)
         .or(create_whitelist)
-        .or(get_whitelist);
+        .or(get_whitelist)
+        .with(cors);
 
     warp::serve(filters) // 5.
         .run((host_for_warp, APP_PORT)) // 6.

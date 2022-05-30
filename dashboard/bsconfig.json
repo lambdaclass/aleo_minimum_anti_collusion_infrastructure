@@ -17,6 +17,7 @@
     "bs-dependencies": [
       "@ryyppy/rescript-promise",
       "@rescript/react",
+      "@glennsl/bs-json",
       "bs-fetch",
       "rescript-swr"
     ]
