@@ -1,7 +1,7 @@
 import poseidon.(Poseidon);
 
 circuit MerkleTree {
-function generate_root8(array: [field;8]) -> field{
+    function generate_root8(array: [field;8]) -> field{
 
         const amount_of_leaves: u32 = 8;
         const log2_amount_leaves: u32 = 3;
@@ -68,6 +68,21 @@ function generate_root8(array: [field;8]) -> field{
             }
         }
         return array_of_leaves[0];
+    }
+
+    function verify_proof32(leave:field, proof: [field;5], path_index: [bool;5], root: field) -> bool{
+        const levels: u32 = 5;
+        
+        let element = leave;
+        for i in 0..levels{
+            if path_index[i] {
+                element = Poseidon::poseidon_2_1(proof[i],element);
+            } else {
+                element = Poseidon::poseidon_2_1(element, proof[i]);
+            }
+        }
+
+        return element == root;
     }
 }
 
