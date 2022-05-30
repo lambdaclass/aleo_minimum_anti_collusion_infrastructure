@@ -1,4 +1,4 @@
-use crate::models::{Election, Tally, Whitelist};
+use crate::models::{Election, Tally, Votes, Whitelist};
 use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
 use crate::utils::votes_to_fix_array;
@@ -26,6 +26,11 @@ pub struct ElectionSignUp {}
 pub struct ElectionMsg {
     aleo_transaction_id: String,
 }
+
+#[derive(Debug)]
+struct DBError;
+
+impl warp::reject::Reject for DBError {}
 
 pub async fn create(
     data: ElectionCreate,
@@ -76,6 +81,22 @@ pub async fn store_msg(
     }
 }
 
+pub async fn get_votes(
+    pool: Pool<RedisConnectionManager>,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    let votes_ids_from_pool: Vec<String> = match con.lrange("votes", 0, -1) {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    Ok(warp::reply::json(&Votes::new(votes_ids_from_pool)))
+}
+
 pub async fn create_whitelist(
     data: Whitelist,
     pool: Pool<RedisConnectionManager>,
@@ -98,10 +119,21 @@ pub async fn create_whitelist(
     Ok(warp::reply::with_status(response, StatusCode::CREATED))
 }
 
-#[derive(Debug)]
-struct DBError;
+pub async fn get_whitelist(
+    pool: Pool<RedisConnectionManager>,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
 
-impl warp::reject::Reject for DBError {}
+    let accounts_ids_from_pool: Vec<String> = match con.lrange("whitelist", 0, -1) {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    Ok(warp::reply::json(&Whitelist::new(accounts_ids_from_pool)))
+}
 
 pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, warp::Rejection> {
     // get redis pool connection

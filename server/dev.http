@@ -15,21 +15,41 @@ Content-Type: application/json
     "public_key": ""
 }
 
-//1. Send Vote
+
+//1. Create whitelist
+POST http://127.0.0.1:3000/election/whitelist
+Content-Type: application/json
+
+{
+    "accounts": [
+        "aleo1y90yg3yzs4g7q25f9nn8khuu00m8ysynxmcw8aca2d0phdx8dgpq4vw348"
+    ]
+}
+
+//2. Send Vote
 POST http://127.0.0.1:3000/election/msg
 Content-Type: application/json
 
 {
-    "aleo_transaction_id": ""
+    "aleo_transaction_id": "at19jm84srxajprzemqkweer83vmh44lhat6p9vd8sv6q9d7tj06yrqx366yz"
 }
 
-//2. Do Tally
+//3. Do Tally
 POST http://127.0.0.1:3000/election/tally/start
 
 
-//transactions ids
+//aleo accounts
+aleo1y90yg3yzs4g7q25f9nn8khuu00m8ysynxmcw8aca2d0phdx8dgpq4vw348
+
+//votes transactions ids
 at1cf6aaeq0xzyajupxvp6tvn0v2yzud5y39nukx93cf5vhwrnnnvqqsy5t37
 at1nzcdpeqlkzgasa0slr9vypa2ck70xf8qq3lvvnd2lyq3588nxuxqejpuqn
 at1l4zsvy00qnc5ztmxewl2c7x2sv28q7nasf55zcah20l5hg66usrqztr8zf
 at1xxgt6a69vug2vfelz6p39pvl4dng5emzjtwvpqvmy5t900t9wsxsxlretj
 at19jm84srxajprzemqkweer83vmh44lhat6p9vd8sv6q9d7tj06yrqx366yz
+
+
+//get endpoints
+GET http://127.0.0.1:3000/election/votes
+GET http://127.0.0.1:3000/election/whitelist
+
