@@ -6,4 +6,4 @@ path_index: [bool; 5] = [true,true,false,false,true];
 root: field = 12398413491283712368743;
 
 [registers]
-r0: field = 0;
+r0: bool = false;
