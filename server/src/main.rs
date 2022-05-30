@@ -45,13 +45,20 @@ async fn main() {
         .and(warp_pool.clone())
         .and_then(election_controllers::sign_up);
 
-    let msg = election_base
+    let create_msg = election_base
         .and(warp::post())
         .and(warp::path("msg"))
         .and(warp::path::end())
         .and(warp::body::json())
         .and(warp_pool.clone())
         .and_then(election_controllers::store_msg);
+
+    let get_votes = election_base
+        .and(warp::get())
+        .and(warp::path("votes"))
+        .and(warp::path::end())
+        .and(warp_pool.clone())
+        .and_then(election_controllers::get_votes);
 
     let start_tally = election_base
         .and(warp::post())
@@ -64,17 +71,25 @@ async fn main() {
     let create_whitelist = election_base
         .and(warp::post())
         .and(warp::path("whitelist"))
-        .and(warp::path("create"))
         .and(warp::path::end())
         .and(warp::body::json())
         .and(warp_pool.clone())
         .and_then(election_controllers::create_whitelist);
 
+    let get_whitelist = election_base
+        .and(warp::get())
+        .and(warp::path("whitelist"))
+        .and(warp::path::end())
+        .and(warp_pool.clone())
+        .and_then(election_controllers::get_whitelist);
+
     let filters = create
         .or(sign_up)
-        .or(msg)
+        .or(create_msg)
+        .or(get_votes)
         .or(start_tally)
-        .or(create_whitelist);
+        .or(create_whitelist)
+        .or(get_whitelist);
 
     warp::serve(filters) // 5.
         .run((host_for_warp, APP_PORT)) // 6.
