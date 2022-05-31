@@ -149,8 +149,9 @@ pub async fn get_whitelist(
 }
 
 pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, warp::Rejection> {
-    // get redis pool connection
+    println!("Staring a new tally ...");
 
+    //Do the tally
     let tally = match tally::calculate(pool.clone()).await {
         Ok(t) => t,
         Err(TallyError) => return Err(warp::reject::custom(TallyError)),
@@ -159,19 +160,19 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
     println!("Tally ready: {:?}", tally);
 
     // Generate circuit input file
-    // println!("Generating circuit input...");
-    // generate_input_file(votes_to_fix_array(&tally.votes), &tally.votes_markle_root);
+    println!("Generating circuit input ...");
+    generate_input_file(votes_to_fix_array(&tally.votes), &tally.votes_markle_root);
 
     // Run circuit
     // TO DO: Make async, don't run if it's already running or has run before
-    // println!("Running circuit to verify the tally. Please wait a minute...");
-    // Command::new("sh")
-    //     .arg("-c")
-    //     .arg("make run_circuits")
-    //     .output()
-    //     .expect("failed to execute process");
+    println!("Running circuit to verify the tally. Please wait a minute...");
+    Command::new("sh")
+        .arg("-c")
+        .arg("make run_circuits")
+        .output()
+        .expect("failed to execute process");
 
-    // println!("Circuit execution finished.");
+    println!("Circuit execution finished.");
 
     Ok(warp::reply::json(&tally))
 }
