@@ -3,7 +3,7 @@ let make = () => {
   <nav className="navbar navbar-expand-lg py-4">
     <div className="container-sm">
       <a className="navbar-brand" href="#">
-        {"Maci for "->React.string} <span className="strong"> {"Aleo"->React.string} </span>
+        {"Aleo "->React.string} <span className="strong"> {"MACI"->React.string} </span>
       </a>
       <form className="form-inline my-2 my-lg-0">
         <input
