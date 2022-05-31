@@ -2,6 +2,9 @@ use poseidon_rs::Fr;
 use poseidon_rs::Poseidon;
 use std::fmt;
 
+use crate::fr_helpers::fr_to_leo_str;
+use crate::fr_helpers::fr_vec_to_leo_str;
+
 pub fn hash(v1: Fr, v2: Fr) -> Fr {
     let big_arr: Vec<Fr> = vec![v1, v2];
     let poseidon = Poseidon::new();
@@ -26,7 +29,7 @@ pub fn generate_merkle_root(mut leaves: Vec<Fr>) -> Fr {
     leaves[0]
 }
 #[derive(Debug, Clone)]
-struct SizeNotPowerOfTwoError;
+pub struct SizeNotPowerOfTwoError;
 
 impl fmt::Display for SizeNotPowerOfTwoError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -34,8 +37,66 @@ impl fmt::Display for SizeNotPowerOfTwoError {
     }
 }
 
-struct MerkleTree {
+#[derive(Debug, Clone)]
+pub struct MerkleTree {
     pub nodes: Vec<Fr>,
+}
+
+/*leaf: &str, proof: &str, path_index: &str, root: &str */
+#[derive(Debug, Clone)]
+pub struct MerkleProof {
+    pub leaf: Fr,
+    pub proof_elements: Vec<Fr>,
+    pub path_index: Vec<bool>,
+}
+
+impl MerkleProof {
+    pub fn new(leaf: Fr, proof_elements: Vec<Fr>, path_index: Vec<bool>) -> Self {
+        Self {
+            leaf,
+            proof_elements,
+            path_index,
+        }
+    }
+
+    pub fn to_proof_strings(&self) -> MerkleProofStrings {
+        let leaf_string = fr_to_leo_str(self.leaf);
+        let proof_string = fr_vec_to_leo_str(&self.proof_elements);
+
+        let path_index_string_vec: Vec<String> =
+            self.path_index.iter().map(|x| x.to_string()).collect();
+        let path_index_string = format!("[{}]", path_index_string_vec.join(","));
+
+        MerkleProofStrings::new(leaf_string, proof_string, path_index_string)
+    }
+}
+#[derive(Debug, Clone)]
+pub struct MerkleProofStrings {
+    leaf: String,
+    proof_elements: String,
+    path_index: String,
+}
+
+impl MerkleProofStrings {
+    pub fn new(leaf: String, proof_elements: String, path_index: String) -> Self {
+        Self {
+            leaf,
+            proof_elements,
+            path_index,
+        }
+    }
+
+    pub fn leaf(&self) -> String {
+        self.leaf.clone()
+    }
+
+    pub fn proof_elements(&self) -> String {
+        self.proof_elements.clone()
+    }
+
+    pub fn path_index(&self) -> String {
+        self.path_index.clone()
+    }
 }
 
 impl MerkleTree {
@@ -66,10 +127,10 @@ impl MerkleTree {
         Ok(Self { nodes })
     }
 
-    pub fn merkle_proof_for(&self, element_index: usize) -> Vec<Fr> {
+    pub fn merkle_proof_for(&self, element_index: usize) -> MerkleProof {
         let amount_leaves = (self.nodes.len() / 2) + 1;
         let mut vec_proof: Vec<Fr> = Vec::new();
-        let mut path: Vec<usize> = Vec::new();
+        let mut path: Vec<bool> = Vec::new();
         let mut width = amount_leaves;
         let mut j = element_index;
         let mut base = 0;
@@ -81,15 +142,21 @@ impl MerkleTree {
                     vec_proof.push(self.nodes[base + k]);
                 }
             }
-            path.push(j % 2); // path_index
+            path.push(j % 2 != 0); // path_index
 
             base += width;
             width >>= 1; // width /= 2;
             j >>= 1; // j /= 2;
         }
 
-        vec_proof.push(*self.nodes.last().unwrap());
-        vec_proof
+        // vec_proof.push(*self.nodes.last().unwrap());
+
+        //TO DO: Update merkle path index
+        MerkleProof::new(self.nodes[element_index], vec_proof, path)
+    }
+
+    pub fn root(&self) -> Fr {
+        *self.nodes.last().unwrap()
     }
 }
 
@@ -159,10 +226,27 @@ mod tests {
 
         let proof0 = tree.merkle_proof_for(0);
 
-        assert_eq!(proof0.last().unwrap(), tree.nodes.last().unwrap());
+        assert_eq!(proof0.proof_elements[0], two);
 
-        assert_eq!(proof0.first().unwrap(), &two);
+        assert_eq!(&proof0.proof_elements[1], &hash(four, five));
+    }
 
-        assert_eq!(&proof0[1], &hash(four, five));
+    #[test]
+    fn leo_representation_test() {
+        let one: Fr = Fr::from_str("1").unwrap();
+        let two: Fr = Fr::from_str("2").unwrap();
+        let three: Fr = Fr::from_str("3").unwrap();
+        let four: Fr = Fr::from_str("4").unwrap();
+        let five: Fr = Fr::from_str("5").unwrap();
+
+        let mock_proof_elements = vec![one, two, four, three];
+        let mock_leaf = five;
+        let mock_index_path = vec![true, false, false, true, true];
+        let proof_strings =
+            MerkleProof::new(mock_leaf, mock_proof_elements, mock_index_path).to_proof_strings();
+
+        assert_eq!(proof_strings.leaf, "5");
+        assert_eq!(proof_strings.proof_elements, "[1,2,4,3]");
+        assert_eq!(proof_strings.path_index, "[true,false,false,true,true]");
     }
 }

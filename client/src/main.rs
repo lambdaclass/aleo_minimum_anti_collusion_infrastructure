@@ -1,6 +1,12 @@
+mod leo;
+
 // Note: this requires the `derive` feature
-use aleo_maci_libs::{aleo_account::account_utils, rcp, transactions};
+use aleo_maci_libs::{
+    aleo_account::account_utils, fr_helpers::converter::*, merkle_tree::MerkleTree, rcp,
+    transactions,
+};
 use clap::{Parser, Subcommand};
+use serde::{Deserialize, Serialize};
 use serde_json::{json, Value};
 use snarkvm::{
     dpc::testnet2::Testnet2,
@@ -34,6 +40,12 @@ enum Commands {
         account_private_key: String,
     },
 }
+
+#[derive(Serialize, Deserialize, Debug)]
+struct WhitelistFromServer {
+    pub accounts: Vec<String>,
+}
+
 fn main() {
     let args: Cli = Cli::parse();
 
@@ -43,8 +55,7 @@ fn main() {
             message_data,
             account_private_key,
         } => {
-            println!("Generating the transaction...");
-            println!("This may take a while");
+            println!("Validating Aleo account ...");
 
             let private_key_result = PrivateKey::<Testnet2>::from_str(account_private_key);
 
@@ -58,6 +69,64 @@ fn main() {
 
             let account: Account<Testnet2> = Account::<Testnet2>::from(private_key);
 
+            // WHITELIST CIRCUIT
+            println!("Fetching tally whitelist ...");
+
+            let client = reqwest::blocking::Client::new();
+            let get_whitelist_result = client
+                .get("http://127.0.0.1:3000/election/whitelist")
+                .send();
+
+            let whitelist_response = match get_whitelist_result {
+                Ok(value) => value,
+                Err(_) => {
+                    eprintln!("Election server can't be reached, try again later");
+                    return;
+                }
+            };
+
+            let whitelist: WhitelistFromServer = whitelist_response.json().unwrap();
+
+            let account_position = match whitelist
+                .accounts
+                .iter()
+                .position(|address| *address == account.address().to_string())
+            {
+                Some(value) => value,
+                None => {
+                    eprintln!(
+                        "You are not in this election whitelist, and so you aren't allowed to vote"
+                    );
+                    return;
+                }
+            };
+
+            println!("Account position in whitelist: {}", account_position);
+
+            println!("Generating a proof of inclusion in the tally whitelist ...");
+            let fr_whitelist = aleo_account_str_vec_to_fr_vec(whitelist.accounts).unwrap();
+            let whitelist_merkle_tree = MerkleTree::new(fr_whitelist).unwrap();
+            let whitelist_inclusion_proof = whitelist_merkle_tree
+                .merkle_proof_for(account_position)
+                .to_proof_strings();
+
+            leo::io::generate_input_file(
+                &whitelist_inclusion_proof.leaf(),
+                &whitelist_inclusion_proof.proof_elements(),
+                &whitelist_inclusion_proof.path_index(),
+                &fr_to_leo_str(whitelist_merkle_tree.root()),
+            );
+
+            //TO DO: Validate LEO is installed,
+            //fetch the circuit code from an external server if it's not on the machine
+            std::process::Command::new("sh")
+                .arg("-c")
+                .arg("cd circuits/whitelist;leo run")
+                .output()
+                .expect("failed to execute process");
+
+            // DATA TRANSACTION
+            println!("Generating a transaction to submit on the blockchain ...");
             let transaction_payload: Vec<u8> = vec![*message_data];
             let transaction =
                 transactions::create_store_data_transaction(transaction_payload, account, true);
@@ -91,6 +160,7 @@ fn main() {
             println!("The transaction id is: {}", transaction_id);
             println!("Notifying the transaction submission to the tallying server ...");
 
+            // TO DO: Extract this logic to its own module
             let request_json = json!({ "aleo_transaction_id": transaction_id });
 
             let client = reqwest::blocking::Client::new();

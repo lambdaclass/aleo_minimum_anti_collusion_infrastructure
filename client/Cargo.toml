@@ -15,6 +15,7 @@ version = "0.8"
 clap = { version = "3.1.6", features = ["derive"] }
 hex = "0.4.3"
 reqwest = { version = "0.11.10", features = ["blocking", "json"] }
+num = "0.1.36"
 
 [dependencies.aleo-maci-libs]
 path = "../libs"
