@@ -22,7 +22,7 @@ pub async fn calculate(pool: Pool<RedisConnectionManager>) -> Result<Tally, Tall
         let public_data = get_transaction_public_data(v.to_string()).await;
         match public_data {
             Ok(data) => votes.push(public_data_to_vote(data)),
-            Err(_) => (),
+            Err(_) => return Err(TallyError),
         };
     }
 

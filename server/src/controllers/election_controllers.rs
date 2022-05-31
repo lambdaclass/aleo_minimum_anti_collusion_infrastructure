@@ -1,11 +1,10 @@
-use crate::models::{Election, Results, Tally, Votes, Whitelist};
+use crate::models::{Election, Results, Votes, Whitelist};
 use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
 use crate::services::tally;
 use crate::utils::errors::{DBError, TallyError};
 use crate::utils::votes_to_fix_array;
 use crate::RedisConnectionManager;
-use aleo_maci_libs::{rcp::get_transaction_public_data, rcp::public_data_to_vote};
 
 use r2d2_redis::redis::{Commands, LposOptions, RedisError};
 use serde::Deserialize;
