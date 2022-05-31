@@ -168,7 +168,7 @@ pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, war
     println!("Running circuit to verify the tally. Please wait a minute...");
     Command::new("sh")
         .arg("-c")
-        .arg("make run_circuits")
+        .arg("cd circuits/tally;leo run")
         .output()
         .expect("failed to execute process");
 
