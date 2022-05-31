@@ -2,7 +2,6 @@ use bech32::FromBase32;
 use ff::PrimeField;
 use num::{BigUint, Num};
 use poseidon_rs::Fr;
-use serde::Serialize;
 use std::error;
 
 pub fn fr_to_leo_str(fr: Fr) -> String {
@@ -40,10 +39,12 @@ pub fn aleo_account_str_to_leo_input(
     Ok(fr_to_leo_str(aleo_account_str_to_fr(account_string)?))
 }
 
+#[cfg(test)]
 mod tests {
+    use super::aleo_account_str_to_fr;
     use ff::PrimeField;
+    use poseidon_rs::Fr;
 
-    use super::*;
     #[test]
     fn test_fr_conversion_leo() {
         let fr: Fr = Fr::from_str(&"321").unwrap();
