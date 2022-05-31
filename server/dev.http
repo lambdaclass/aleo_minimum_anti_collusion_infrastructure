@@ -53,3 +53,4 @@ at19jm84srxajprzemqkweer83vmh44lhat6p9vd8sv6q9d7tj06yrqx366yz
 GET http://127.0.0.1:3000/election/votes
 GET http://127.0.0.1:3000/election/whitelist
 
+GET http://127.0.0.1:3000/election/tally/results

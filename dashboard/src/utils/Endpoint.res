@@ -13,6 +13,7 @@ type url = {
   aleo_tx: string => string,
   maci_votes: unit => string,
   maci_whitelist: unit => string,
+  maci_results: unit => string,
 }
 
 let get_url_or_default = (url: option<string>, default: string): string => {
@@ -31,4 +32,5 @@ let url = {
   aleo_tx: (transaction_id: string) => `${base_url.aleo}/txs/${transaction_id}`,
   maci_votes: () => `${base_url.maci}/election/votes`,
   maci_whitelist: () => `${base_url.maci}/election/whitelist`,
+  maci_results: () => `${base_url.maci}/election/tally/results`,
 }

@@ -1,5 +1,3 @@
-%%raw("import './styles/main.css'")
-
 @react.component
 let make = () => {
   let url = RescriptReactRouter.useUrl()

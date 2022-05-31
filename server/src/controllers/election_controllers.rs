@@ -1,6 +1,8 @@
-use crate::models::{Election, Tally, Votes, Whitelist};
+use crate::models::{Election, Results, Tally, Votes, Whitelist};
 use crate::r2d2::Pool;
 use crate::services::leo_io::generate_input_file;
+use crate::services::tally;
+use crate::utils::errors::{DBError, TallyError};
 use crate::utils::votes_to_fix_array;
 use crate::RedisConnectionManager;
 use aleo_maci_libs::{rcp::get_transaction_public_data, rcp::public_data_to_vote};
@@ -26,11 +28,6 @@ pub struct ElectionSignUp {}
 pub struct ElectionMsg {
     aleo_transaction_id: String,
 }
-
-#[derive(Debug)]
-struct DBError;
-
-impl warp::reject::Reject for DBError {}
 
 pub async fn create(
     data: ElectionCreate,
@@ -97,6 +94,22 @@ pub async fn get_votes(
     Ok(warp::reply::json(&Votes::new(votes_ids_from_pool)))
 }
 
+pub async fn get_results(
+    pool: Pool<RedisConnectionManager>,
+) -> Result<impl warp::Reply, warp::Rejection> {
+    let mut con = match pool.get() {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    let results_from_pool: Vec<u32> = match con.lrange("results", 0, -1) {
+        Ok(v) => v,
+        Err(_) => return Err(warp::reject::custom(DBError)),
+    };
+
+    Ok(warp::reply::json(&Results::new(results_from_pool)))
+}
+
 pub async fn create_whitelist(
     data: Whitelist,
     pool: Pool<RedisConnectionManager>,
@@ -108,7 +121,7 @@ pub async fn create_whitelist(
     };
 
     let _: () = con.del("whitelist").unwrap();
-    let _: () = con.lpush("whitelist", data.accounts).unwrap();
+    let _: () = con.rpush("whitelist", data.accounts).unwrap();
 
     let body = json!({"msg": "Whitelist created successfully"});
     let mut response = Response::new(body.to_string().into());
@@ -137,58 +150,28 @@ pub async fn get_whitelist(
 
 pub async fn start_tally(pool: Pool<RedisConnectionManager>) -> Result<Json, warp::Rejection> {
     // get redis pool connection
-    let mut con = match pool.get() {
-        Ok(v) => v,
-        Err(_) => return Err(warp::reject::custom(DBError)),
+
+    let tally = match tally::calculate(pool.clone()).await {
+        Ok(t) => t,
+        Err(TallyError) => return Err(warp::reject::custom(TallyError)),
     };
 
-    // get transaction id from redis db
-    let votes_ids_from_pool: Vec<String> = match con.lrange("votes", 0, -1) {
-        Ok(v) => v,
-        Err(_) => return Err(warp::reject::custom(DBError)),
-    };
-
-    println!(
-        "Aleo Transactions to be computed: {:?}",
-        votes_ids_from_pool
-    );
-
-    // Get votes from the Aleo Ledger
-    let mut votes: Vec<String> = Vec::new();
-    for v in votes_ids_from_pool {
-        let public_data = get_transaction_public_data(v.to_string()).await;
-        let vote = public_data_to_vote(public_data.unwrap());
-        votes.push(vote);
-    }
-
-    println!("Votes to be counted: {:?} ", votes);
-
-    println!("Doing the tally...");
-
-    let tally = Tally::new(
-        votes
-            .clone()
-            .into_iter()
-            .map(|v| v.parse::<u32>().unwrap())
-            .collect(),
-    );
-
-    println!("Tally finished: {:?}", tally);
+    println!("Tally ready: {:?}", tally);
 
     // Generate circuit input file
-    println!("Generating circuit input...");
-    generate_input_file(votes_to_fix_array(&tally.votes), &tally.votes_markle_root);
+    // println!("Generating circuit input...");
+    // generate_input_file(votes_to_fix_array(&tally.votes), &tally.votes_markle_root);
 
     // Run circuit
     // TO DO: Make async, don't run if it's already running or has run before
-    println!("Running circuit to verify the tally. Please wait a minute...");
-    Command::new("sh")
-        .arg("-c")
-        .arg("make run_circuits")
-        .output()
-        .expect("failed to execute process");
+    // println!("Running circuit to verify the tally. Please wait a minute...");
+    // Command::new("sh")
+    //     .arg("-c")
+    //     .arg("make run_circuits")
+    //     .output()
+    //     .expect("failed to execute process");
 
-    println!("Circuit execution finished.");
+    // println!("Circuit execution finished.");
 
     Ok(warp::reply::json(&tally))
 }
