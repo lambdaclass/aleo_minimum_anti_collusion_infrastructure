@@ -30,6 +30,8 @@ enum Commands {
         message_data: u8,
         /// Account private key to be used to send the vote
         account_private_key: String,
+        /// URL of the tally server to use
+        url: String,
     },
     /// Creates a new Aleo account, and outputs its private key
     CreateAleoAccount {},
@@ -54,6 +56,7 @@ fn main() {
         Commands::VoteFor {
             message_data,
             account_private_key,
+            url,
         } => {
             println!("Validating Aleo account ...");
 
@@ -73,9 +76,7 @@ fn main() {
             println!("Fetching tally whitelist ...");
 
             let client = reqwest::blocking::Client::new();
-            let get_whitelist_result = client
-                .get("http://127.0.0.1:3000/election/whitelist")
-                .send();
+            let get_whitelist_result = client.get(format!("{}/election/whitelist", url)).send();
 
             let whitelist_response = match get_whitelist_result {
                 Ok(value) => value,
@@ -165,7 +166,7 @@ fn main() {
 
             let client = reqwest::blocking::Client::new();
             let send_result = client
-                .post("http://127.0.0.1:3000/election/msg")
+                .post(format!("{}/election/msg", url))
                 .json(&request_json)
                 .send();
 

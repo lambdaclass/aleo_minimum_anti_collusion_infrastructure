@@ -57,7 +57,7 @@ clean_circuits:
 	cd circuits/tally;leo clean
 
 send_test_vote:
-	cargo run --release --bin aleo-maci-cli vote-for 2 APrivateKey1zkpFgVh5ptpLgH39p2StPmRzAu14XPat415vRv6XmcR2Sun
+	cargo run --release --bin aleo-maci-cli vote-for 2 APrivateKey1zkpFgVh5ptpLgH39p2StPmRzAu14XPat415vRv6XmcR2Sun http://localhost:3000
 
 start_tally:
 	curl -X POST http://127.0.0.1:3000/election/tally/start
