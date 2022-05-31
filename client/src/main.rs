@@ -55,7 +55,7 @@ fn main() {
             message_data,
             account_private_key,
         } => {
-            println!("Validationg Aleo account ...");
+            println!("Validating Aleo account ...");
 
             let private_key_result = PrivateKey::<Testnet2>::from_str(account_private_key);
 
@@ -66,13 +66,6 @@ fn main() {
                     return;
                 }
             };
-
-            //TO DO: Generate input file for IO circuits
-            /*
-            Account for testing:
-            APrivateKey1zkp2Z1V8iEVKPehoGSJ37i6tUpTePF3qebdUoJfnDmhnEH5
-            aleo13j6lk3lvqjnymxjt3r080e226vt6933rv2e5dl2mt4226y5625qsumwz4z
-            */
 
             let account: Account<Testnet2> = Account::<Testnet2>::from(private_key);
 
