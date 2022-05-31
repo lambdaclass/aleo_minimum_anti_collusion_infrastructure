@@ -11,7 +11,7 @@ pub fn fr_to_leo_str(fr: Fr) -> String {
     BigUint::from_str_radix(sliced_str, 16).unwrap().to_string()
 }
 
-pub fn fr_vec_to_leo_str(fr_vec: &Vec<Fr>) -> String {
+pub fn fr_vec_to_leo_str(fr_vec: &[Fr]) -> String {
     let string_vec: Vec<String> = fr_vec.iter().map(|x| fr_to_leo_str(*x)).collect();
     format!("[{}]", string_vec.join(","))
 }
