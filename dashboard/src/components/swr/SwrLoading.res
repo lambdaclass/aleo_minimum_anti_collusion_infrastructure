@@ -1,4 +1,4 @@
 @react.component
 let make = () => {
-  <p> {"Loading ..."->React.string} </p>
+  <div className="spinner-border text-light" role="status"> <span className="sr-only" /> </div>
 }

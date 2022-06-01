@@ -5,9 +5,17 @@ nix_shell:
 	nix-shell
 
 build:
-	cargo build --release
-	npm install --prefix dashboard --silent
+	@echo "👷 * Aleo Maci building process started *"
+	@echo "========================================="
+	@echo "🔨 1/3 Building the Server ..."""
+	cargo build --release -p aleo-maci-server
+	@echo "🔨 2/3 Building the CLI project..."
+	cargo build --release -p aleo-maci-cli
+	@echo "🔨 3/3 Building the Dashboard..."
+	npm install --prefix dashboard --silent 
 	npm run re:build --prefix dashboard
+	@echo "==================================================="
+	@echo "✅ Aleo Maci building process finished sucessfully!"
 
 ops:
 	redis-server --daemonize yes
