@@ -4,20 +4,23 @@ let make = () => {
   let results = Endpoint.url.maci_results()->SwrFetch.useGet(Results.decode)
   let votes = Endpoint.url.maci_votes()->SwrFetch.useGet(Votes.decode)
 
-  let whitelistElement = switch whitelist {
-  | Ready(data) => <WhitelistGrid accounts={data.accounts} />
-  | Loading => <SwrLoading />
-  | Error(error) => <SwrError error />
-  }
-
   let resultsElement = switch results {
+  | Ready({results: []}) => <EmptyAlert msg="There are no results available to display yet." />
   | Ready(data) => <ResultGrid results={data.results} />
   | Loading => <SwrLoading />
   | Error(error) => <SwrError error />
   }
 
   let votesElement = switch votes {
+  | Ready({transactions: []}) => <EmptyAlert msg="No one has voted yet." />
   | Ready(data) => <VoteTransactionGrid transaction={data.transactions} />
+  | Loading => <SwrLoading />
+  | Error(error) => <SwrError error />
+  }
+
+  let whitelistElement = switch whitelist {
+  | Ready({accounts: []}) => <EmptyAlert msg="The whitelist has not been generated yet." />
+  | Ready(data) => <WhitelistGrid accounts={data.accounts} />
   | Loading => <SwrLoading />
   | Error(error) => <SwrError error />
   }
