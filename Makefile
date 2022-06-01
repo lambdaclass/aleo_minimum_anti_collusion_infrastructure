@@ -36,6 +36,7 @@ run_server:
 	HOST="localhost" REDIS_URL="redis://127.0.0.1:6379" cargo run --release -p aleo-maci-server
 
 run_dashboard:
+	npm run re:build --prefix dashboard
 	PORT=4000 REACT_APP_MACI_HOST=http://127.0.0.1:3000 npm start --prefix dashboard
 
 run_server_docker:
