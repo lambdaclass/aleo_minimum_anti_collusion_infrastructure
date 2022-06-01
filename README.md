@@ -30,9 +30,10 @@ Make ops will start a redis DB that can be shutdown with:
 ### How to perform a demo election
 
 1. To create and electrion with a example whitelist run:
+
 `make create_test_tally`
 
-to send a vote for option 1, 2 o r 3 you can run any of these commands:
+2. to send a vote for option 1, 2 o r 3 you can run any of these commands:
 
 `make send_test_vote_1`
 
@@ -40,7 +41,7 @@ to send a vote for option 1, 2 o r 3 you can run any of these commands:
 
 `make send_test_vote_3`
 
-lastly, when the votes are visible on the aleo explorer, you can run the tally:
+3. lastly, when the votes are visible on the aleo explorer, you can run the tally:
 `make start_tally`
 
 Now the result should be visible on the dashboard.
