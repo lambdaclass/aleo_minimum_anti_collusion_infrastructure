@@ -18,7 +18,9 @@ If it's the first time using this app run:
 To start the server and the dashboard run:
 
 `make ops`
+
 `make run_server`
+
 `make run_dashboard`
 
 Make ops will start a redis DB that can be shutdown with:
@@ -31,6 +33,7 @@ Make ops will start a redis DB that can be shutdown with:
 `make create_test_tally`
 
 to send a vote for option 1, 2 o r 3 you can run any of these commands:
+
 `make send_test_vote_1`
 
 `make send_test_vote_2`
