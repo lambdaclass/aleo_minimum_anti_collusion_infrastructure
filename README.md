@@ -32,7 +32,9 @@ Make ops will start a redis DB that can be shutdown with:
 
 to send a vote for option 1, 2 o r 3 you can run any of these commands:
 `make send_test_vote_1`
+
 `make send_test_vote_2`
+
 `make send_test_vote_3`
 
 lastly, when the votes are visible on the aleo explorer, you can run the tally:
