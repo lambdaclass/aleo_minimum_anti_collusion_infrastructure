@@ -30,6 +30,10 @@ a:hover {
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 }
+.navbar-brand .strong{
+  font-size: 1.75rem;
+}
+
 nav a:hover .strong {
   font-weight: bold;
   background: transparent;

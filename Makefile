@@ -4,6 +4,11 @@ init:
 nix_shell:
 	nix-shell
 
+build:
+	cargo build --release
+	npm install --prefix dashboard --silent
+	npm run re:build --prefix dashboard
+
 ops:
 	redis-server --daemonize yes
 
@@ -18,9 +23,6 @@ stop:
 
 stop_docker:
 	docker-compose down redis	
-	
-build:
-	cargo build --release
 
 run_server:
 	HOST="localhost" REDIS_URL="redis://127.0.0.1:6379" cargo run --release -p aleo-maci-server
@@ -64,6 +66,9 @@ send_test_vote2:
 
 send_test_vote3:
 	cargo run --release --bin aleo-maci-cli vote-for 2 APrivateKey1zkpCmLmroWhvXj37G5h1LoS4SEbK3f2zHAt2Qk8tVpB5BBx http://localhost:3000
+
+send_vote:
+	cargo run --release --bin aleo-maci-cli vote-for $(option) $(account) $(server)
 
 start_tally:
 	curl -X POST http://127.0.0.1:3000/election/tally/start
