@@ -16,18 +16,24 @@ let make = () => {
   | Error(error) => <SwrError error />
   }
 
-  let transactionElement = switch votes {
+  let votesElement = switch votes {
   | Ready(data) => <VoteTransactionGrid transaction={data.transactions} />
   | Loading => <SwrLoading />
   | Error(error) => <SwrError error />
   }
 
-  <div className="row">
-    <div className="col gy-5"> <h4> {"Tally"->React.string} </h4> </div>
-    <div className="gy-3"> {resultsElement} </div>
-    <div className="col gy-5"> <h4> {"Votes"->React.string} </h4> </div>
-    {transactionElement}
-    <div className="col gy-5"> <h4> {"Whitelisted accounts"->React.string} </h4> </div>
-    {whitelistElement}
-  </div>
+  <>
+    <div className="row">
+      <div className="col gy-3"> <h4> {"Tally"->React.string} </h4> </div>
+    </div>
+    <div className="row"> <div className="col"> {resultsElement} </div> </div>
+    <div className="row">
+      <div className="col gy-5"> <h4> {"Votes"->React.string} </h4> </div>
+    </div>
+    <div className="row"> <div className="col"> {votesElement} </div> </div>
+    <div className="row">
+      <div className="col gy-5"> <h4> {"Whitelisted Accounts"->React.string} </h4> </div>
+    </div>
+    <div className="row"> <div className="col"> {whitelistElement} </div> </div>
+  </>
 }
