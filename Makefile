@@ -58,8 +58,14 @@ run_whitelist_circuit:
 clean_circuits:
 	cd circuits/tally;leo clean
 
-send_test_vote:
+send_test_vote1:
 	cargo run --release --bin aleo-maci-cli vote-for 2 APrivateKey1zkpFgVh5ptpLgH39p2StPmRzAu14XPat415vRv6XmcR2Sun http://localhost:3000
+
+send_test_vote2:
+	cargo run --release --bin aleo-maci-cli vote-for 2 APrivateKey1zkpJJGbEaWCqv2ASPMRVuT44D2EWKQArHoDCzyTbwq6CFVk http://localhost:3000
+
+send_test_vote3:
+	cargo run --release --bin aleo-maci-cli vote-for 2 APrivateKey1zkpCmLmroWhvXj37G5h1LoS4SEbK3f2zHAt2Qk8tVpB5BBx http://localhost:3000
 
 send_vote:
 	cargo run --release --bin aleo-maci-cli vote-for $(option) $(account) $(server)
@@ -73,8 +79,8 @@ create_test_tally:
 	--data-raw '{ \
 		"accounts":[ \
 			"aleo1nf0mhdl50j2r9afz7s40ew7h5glpgcenu297kvu2hjd3ve6mfqzqxpsf8p", \
-			"aleo1vjpegjrnznedf5tqms5sz27t7xquddrtpfgta9x5uy2jeyhvccrqzdc0am", \
-			"aleo1ak7j4g7g5lnqvqgs6kel0ahyu7wka33ezgxjgtxph7nrp3svtvzqt20a8j", \
+			"aleo17yld7e0gyteascun958txzpxsuufxuxxa7fegm6pprlz3e85n5ys0enrw7", \
+			"aleo1ujwrh9mvmecp89n0cal73djw0f8x5d60ec2nmvar0d3xh8e00y8sypaxdx", \
 			"aleo1fn4nhqs7gq0hswuyxux6kv3eejrv2pl2kylqv84h8cqpgzz5kvps8vysld", \
 			"aleo1d4s2kapyztkg84gey34392jr08q4ecmk7huj2fngkym9d34mns8qyndjyd", \
 			"aleo1stv68gsrt49vhcf2l0d28z66jzcgc9vaj0d2jsyw9m2fcpmmkqyqhxh7x8", \
