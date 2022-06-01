@@ -96,7 +96,7 @@ fn main() {
                 Some(value) => value,
                 None => {
                     eprintln!(
-                        "You are not in this election whitelist, and so you aren't allowed to vote"
+                        "You are not in this election whitelist, so you aren't allowed to vote"
                     );
                     return;
                 }
@@ -172,7 +172,7 @@ fn main() {
 
             match send_result {
                 Ok(_) => {
-                    println!("Vote process finished successfully")
+                    println!("Voting process finished successfully")
                 }
                 Err(_) => {
                     eprintln!("Election server can't be reached, try again later")
