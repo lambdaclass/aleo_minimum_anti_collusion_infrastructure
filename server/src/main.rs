@@ -3,7 +3,7 @@ mod models;
 mod services;
 mod utils;
 
-use crate::controllers::election_controllers;
+use crate::controllers::{election_controllers, security::check_auth};
 use r2d2_redis::{r2d2, RedisConnectionManager};
 use std::env;
 use warp::Filter;
@@ -77,6 +77,7 @@ async fn main() {
         .and(warp::path("whitelist"))
         .and(warp::path::end())
         .and(warp::body::json())
+        .and(check_auth().untuple_one())
         .and(warp_pool.clone())
         .and_then(election_controllers::create_whitelist);
 
