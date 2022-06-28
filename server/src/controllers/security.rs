@@ -1,3 +1,4 @@
+use std::env;
 use warp::Filter;
 
 const HEADER_XAUTH: &str = "X-Auth-Token";
@@ -6,8 +7,8 @@ pub fn check_auth() -> impl Filter<Extract = ((),), Error = warp::Rejection> + C
     warp::any()
         .and(warp::header::<String>(HEADER_XAUTH))
         .and_then(|xauth: String| async move {
-            // Check auth
-            if xauth != ("s3cr37_t0k3n") {
+            let token = env::var("ADMIN_TOKEN").expect("$ADMIN_TOKEN not setted");
+            if xauth != token {
                 return Err(warp::reject::custom(FailAuth));
             }
 

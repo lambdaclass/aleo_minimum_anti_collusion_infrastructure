@@ -15,6 +15,9 @@ async fn main() {
     let host = env::var("HOST").expect("$HOST not setted");
     let redis_url = env::var("REDIS_URL").expect("$REDIS_URL not setted");
 
+    //to test if the env variable has been set
+    env::var("ADMIN_TOKEN").expect("$ADMIN_TOKEN not setted");
+
     let host_for_warp = match host.as_str() {
         "docker" => [0, 0, 0, 0],
         _ => [127, 0, 0, 1],
