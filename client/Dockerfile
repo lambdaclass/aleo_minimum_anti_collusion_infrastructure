@@ -13,6 +13,7 @@ ARG HOST
 ARG REDIS_URL
 ENV REDIS_URL=${REDIS_URL}
 ENV HOST=${HOST}
+ENV ADMIN_TOKEN=${ADMIN_TOKEN}
 ENV PATH="/aleo_maci:${PATH}" 
 RUN apt update && apt install -y openssl curl
 WORKDIR /aleo_maci

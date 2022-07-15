@@ -23,6 +23,7 @@ services:
       args:
         HOST: docker
         REDIS_URL: redis://redis:6379
+        ADMIN_TOKEN: Tg5F3FpZFGhr
     ports:
       - 3000:3000
     depends_on:

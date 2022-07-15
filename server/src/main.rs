@@ -3,7 +3,7 @@ mod models;
 mod services;
 mod utils;
 
-use crate::controllers::election_controllers;
+use crate::controllers::{election_controllers, security::check_auth};
 use r2d2_redis::{r2d2, RedisConnectionManager};
 use std::env;
 use warp::Filter;
@@ -14,6 +14,9 @@ const APP_PORT: u16 = 3000;
 async fn main() {
     let host = env::var("HOST").expect("$HOST not setted");
     let redis_url = env::var("REDIS_URL").expect("$REDIS_URL not setted");
+
+    //to test if the env variable has been set
+    env::var("ADMIN_TOKEN").expect("$ADMIN_TOKEN not setted");
 
     let host_for_warp = match host.as_str() {
         "docker" => [0, 0, 0, 0],
@@ -77,6 +80,7 @@ async fn main() {
         .and(warp::path("whitelist"))
         .and(warp::path::end())
         .and(warp::body::json())
+        .and(check_auth().untuple_one())
         .and(warp_pool.clone())
         .and_then(election_controllers::create_whitelist);
 
